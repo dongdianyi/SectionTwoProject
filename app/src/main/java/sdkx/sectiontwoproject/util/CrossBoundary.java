@@ -20,7 +20,7 @@ import com.alibaba.fastjson.JSONArray;
 /**
  * 越界监测
  */
-public class CrossBoundary {
+public class /**/CrossBoundary {
     /**
      * 地球半径
      **/
@@ -181,7 +181,7 @@ public class CrossBoundary {
 			totleStr="0"+totleStr;
 		}
 		Log.e("输出数据：",checkValue+"\n"+totleStr);
-        return totleStr.equals(checkValue);
+        return totleStr.equalsIgnoreCase(checkValue);
     }
 
     /**

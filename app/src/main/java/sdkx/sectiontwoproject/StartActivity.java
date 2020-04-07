@@ -6,6 +6,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.kongqw.serialportlibrary.Device;
 import com.kongqw.serialportlibrary.SerialPortFinder;
 import com.kongqw.serialportlibrary.SerialPortManager;
@@ -32,6 +33,7 @@ import sdkxsoft.com.CarTrajectory;
 import sdkxsoft.com.pojo.SitePort;
 import sdkxsoft.com.pojo.XyPojo;
 import sdkxsoft.com.tools.LngLatToXYTools;
+import sdkxsoft.com.tools.PathInOrderPro;
 
 public class StartActivity extends BaseActivity<String> {
 
@@ -53,6 +55,11 @@ public class StartActivity extends BaseActivity<String> {
     public CrossBoundary crossBoundary;
     private String s = "";
     StringBuffer stringBuffer;
+    private String filedStr;
+    private boolean isShow=false;
+
+   private CarTrajectory carTrajectory;
+    private PathInOrderPro pathInOrderPro;
 
     @Override
     public int intiLayout() {
@@ -65,8 +72,7 @@ public class StartActivity extends BaseActivity<String> {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
 
-
-
+        carTrajectory=new CarTrajectory();
         crossBoundary = new CrossBoundary();
         stringBuffer = new StringBuffer();
         serialPort();
@@ -92,39 +98,56 @@ public class StartActivity extends BaseActivity<String> {
         noHttpRx.postHttp("考场", HttpUrl.GETFIELD_URL, map, null);
 
 
-
     }
 
     @Override
     public void toActivityData(String flag, String object) {
         super.toActivityData(flag, object);
         Log.e("请求数据：" + flag, object);
+        filedStr = object;
         Gson gson = new Gson();
         if (flag.equals("考场")) {
-            Filed filed = gson.fromJson(object, Filed.class);
-            for (int i = 0; i < filed.getData().size(); i++) {
-                mList.add(new SitePort(filed.getData().get(i).getLng(), filed.getData().get(i).getLat()));
+            try {
+
+
+                Filed filed = gson.fromJson(object, Filed.class);
+                if (filed.getData() == null)
+                    return;
+                for (int i = 0; i < filed.getData().size(); i++) {
+                    mList.add(new SitePort(filed.getData().get(i).getLng(), filed.getData().get(i).getLat()));
+                }
+                Log.e("myView宽高：", myView.getWidth() + "---" + myView.getHeight());
+                lngLatToXYTools = CarTrajectory.getSiteTools(myView.getWidth() - 20, myView.getHeight() - 40);
+                //拿到path对象
+                pathInOrderPro = CarTrajectory.getPathOrder(mList);
+                //8点坐标
+                List<XyPojo> xyPojos = lngLatToXYTools.siteAdjust(mList);
+
+                Log.e("lngLatToXYTools缩放比例：", lngLatToXYTools.getxScaling() + "---" + lngLatToXYTools.getyScaling());
+                //传入点的集合
+                RelativeLayout.LayoutParams l = new RelativeLayout.LayoutParams((int) (double) xyPojos.get(0).getX() + 50, (int) (double) xyPojos.get(0).getY() + 50);
+                l.addRule(RelativeLayout.CENTER_IN_PARENT);
+                myView.setLayoutParams(l);
+                myviewCar.setLayoutParams(l);
+                myView.getPoints(xyPojos);
+                map.put("androidId", "12345678");
+                noHttpRx.postHttp("车", HttpUrl.GETCAR_URL, map, null);
+            } catch (JsonSyntaxException e) {
             }
-            Log.e("myView宽高：", myView.getWidth() + "---" + myView.getHeight());
-            lngLatToXYTools = CarTrajectory.getSiteTools(myView.getWidth()-20, myView.getHeight()-40);
-            List<XyPojo> xyPojos = lngLatToXYTools.siteAdjust(mList);
-            Log.e("lngLatToXYTools缩放比例：",lngLatToXYTools.getxScaling()+"---"+lngLatToXYTools.getyScaling());
-            //传入点的集合
-            RelativeLayout.LayoutParams l=new RelativeLayout.LayoutParams((int)(double)xyPojos.get(0).getX()+50,(int)(double)xyPojos.get(0).getY()+50);
-            l.addRule(RelativeLayout.CENTER_IN_PARENT);
-            myView.setLayoutParams(l);
-            myviewCar.setLayoutParams(l);
-            myView.getPoints(xyPojos);
-            map.put("androidId", "12345678");
-            noHttpRx.postHttp("车", HttpUrl.GETCAR_URL, map, null);
         }
         if (flag.equals("车")) {
-            Car car=gson.fromJson(object,Car.class);
-            myviewCar.getCar(car,lngLatToXYTools);
+            try {
+                Car car = gson.fromJson(object, Car.class);
+                myviewCar.getCar(car, lngLatToXYTools);
+                //录入车辆场地信息
+                crossBoundary.setMessage(filedStr,object,"");
 
+            } catch (JsonSyntaxException e) {
+            }
 
         }
     }
+
     public void serialPort() {
         SerialPortFinder serialPortFinder = new SerialPortFinder();
         ArrayList<Device> devices = serialPortFinder.getDevices();
@@ -155,20 +178,36 @@ public class StartActivity extends BaseActivity<String> {
                                 @Override
                                 public void run() {
                                     s = new String(finalBytes);
-                                    Log.e("数据是否正确：",crossBoundary.checkData(s)+"");
-                                    if (crossBoundary.checkData(s)) {
+//                                    Log.e("数据是否正确：", crossBoundary.checkData(s) + "");
+//                                    if (crossBoundary.checkData(s)) {
+                                    String[] arr = s.split(",");
+                                    if (arr.length <= 20)
+                                        return;
 
-                                        String []arr=s.split(",");
-                                        try {
-                                            double lng=Double.parseDouble(arr[2]);
-                                            double lat=Double.parseDouble(arr[3]);
-                                            double angle=Double.parseDouble(arr[5]);
-                                            Log.e("截取的数据","经度："+lng+"纬度"+lat);
-                                            myviewCar.getPoint(lngLatToXYTools.getLngLatToXyPro(lng,lat),angle);
-                                        }catch (NumberFormatException e){
+                                    try {
+                                        double lng = Double.parseDouble(arr[2]);
+                                        double lat = Double.parseDouble(arr[3]);
+                                        double angle = Double.parseDouble(arr[5]);
+                                        Log.e("截取的数据", "经度：" + lng + "纬度" + lat);
+                                        if (lngLatToXYTools != null && myviewCar != null) {
+                                            if (crossBoundary.isCross(s)&&!isShow) {
+                                                //true越出边界
+                                                 showDialog(StartActivity.this,false,"您已越出边界，考试结束");
+                                                 isShow=true;
+                                                 myviewCar.transferData();
+                                            }
+                                            if (!pathInOrderPro.detectionPath(lng,lat)) {
+                                                //false未按规定路线行驶
+                                                showDialog(StartActivity.this,false,"您未按规定路线行驶，考试结束");
+                                                isShow=true;
+                                                myviewCar.transferData();
+                                            }
+                                            myviewCar.getPoint(lngLatToXYTools.getLngLatToXyPro(lng, lat), angle);
                                         }
+                                    } catch (NumberFormatException e) {
                                     }
                                 }
+//                            }
                             });
                         }
 

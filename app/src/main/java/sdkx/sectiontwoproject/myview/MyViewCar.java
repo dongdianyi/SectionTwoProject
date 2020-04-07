@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sdkx.sectiontwoproject.R;
+import sdkx.sectiontwoproject.StartActivity;
+import sdkx.sectiontwoproject.base.BaseActivity;
 import sdkx.sectiontwoproject.bean.Car;
 import sdkxsoft.com.pojo.XyPojo;
 import sdkxsoft.com.tools.LngLatToXYTools;
@@ -47,10 +49,12 @@ public class MyViewCar extends View {
     private Matrix matrix;
     List<Float>xyPojoXY;
 
+    private Context context;
+
 
     public MyViewCar(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-
+        this.context=context;
         //画笔设置
         paint = new Paint();
 //        paint.setStyle(Paint.Style.STROKE);//空心
@@ -74,7 +78,13 @@ public class MyViewCar extends View {
 
     }
 
+    /**
+     *
+     * @param xyPojo
+     * @param angle 角度
+     */
     public void getPoint(XyPojo xyPojo, double angle) {
+
         this.xyPojo = xyPojo;
         alpha = (float) angle;
         Log.e("Gps经纬度", xyPojo.getX() + "---" + xyPojo.getY());
@@ -311,4 +321,10 @@ public class MyViewCar extends View {
         return new XyPojo((lng - xMargin), (lat + yMargin));
     }
 
+    /**
+     * 向后台传递路线数据
+     */
+    public void transferData() {
+        Log.e("向后台传递的路线数据：",xyPojoXY.toString());
+    }
 }
