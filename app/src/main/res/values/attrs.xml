@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--自定义View属性-->
+
+    <declare-styleable name="MyView">
+        <attr name="Linecolor" format="color" />
+        <attr name="centerInParent" format="boolean"/>
+    </declare-styleable>
+
+</resources>

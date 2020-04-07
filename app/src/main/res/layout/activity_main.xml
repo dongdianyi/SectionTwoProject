@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/out_style"
+    tools:context=".MainActivity"
+    tools:ignore="ContentDescription">
+
+    <include
+        style="@style/top_style"
+        layout="@layout/title_view" />
+
+    <LinearLayout
+        android:id="@+id/exit_linear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/exit_bg"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="12dp"
+        android:paddingTop="5dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="5dp">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/exit" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/exit_text"
+            android:textColor="@color/title_color"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear"
+        style="@style/LinearLayout"
+        android:background="@mipmap/popwindow_bg">
+
+        <TextView
+            style="@style/title_style"
+            android:text="系统提示" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="40dp"
+            android:text="考试准备好后，请点击下方“准备考试”按钮"
+            android:textColor="@color/title_color"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/pre_tv"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:background="@drawable/exit_bg"
+            android:gravity="center"
+            android:paddingLeft="30dp"
+            android:paddingTop="5dp"
+            android:paddingRight="30dp"
+            android:paddingBottom="5dp"
+            android:text="准备考试"
+            android:textColor="@color/title_color"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <include layout="@layout/bottom_view" />
+</RelativeLayout>

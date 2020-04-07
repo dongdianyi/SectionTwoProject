@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/out_style"
+    tools:context=".PerInfActivity">
+
+    <include
+        style="@style/top_style"
+        layout="@layout/title_view" />
+
+
+    <RelativeLayout
+        style="@style/LinearLayout"
+        android:layout_marginLeft="@dimen/dp_250"
+        android:id="@+id/linear"
+        android:background="@mipmap/popwindow_bg"
+        android:padding="@dimen/dp_40">
+
+        <TextView
+            android:id="@+id/title_tv"
+            style="@style/title_style"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/dp_40"
+            android:text="考生信息" />
+
+        <ImageView
+            android:id="@+id/head_portrait_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title_tv"
+            android:layout_centerVertical="true"
+            android:adjustViewBounds="true"
+            android:src="@mipmap/head_portrait" />
+
+
+        <TextView
+            android:id="@+id/start_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/head_portrait_iv"
+            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_toRightOf="@id/head_portrait_iv"
+            android:background="@drawable/exit_bg"
+            android:gravity="center"
+            android:paddingTop="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_10"
+            android:text="开始考试"
+            android:textColor="@color/title_color" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/start_tv"
+            android:layout_alignTop="@id/head_portrait_iv"
+            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_toRightOf="@id/head_portrait_iv"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/name_tv"
+                    style="@style/textview_style" />
+
+                <TextView
+                    android:id="@+id/sex_tv"
+                    style="@style/textview_style" />
+
+                <TextView
+                    android:id="@+id/date_tv"
+                    style="@style/textview_style" />
+
+                <TextView
+                    android:id="@+id/model_tv"
+                    style="@style/textview_style" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/id_num_tv"
+                    style="@style/textview_style" />
+
+                <TextView
+                    android:id="@+id/num_tv"
+                    style="@style/textview_style" />
+
+                <TextView
+                    android:id="@+id/room_tv"
+                    style="@style/textview_style" />
+
+                <TextView
+                    android:id="@+id/type_tv"
+                    style="@style/textview_style" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+    <include layout="@layout/bottom_view" />
+</RelativeLayout>

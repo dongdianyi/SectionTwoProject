@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/out_style"
+    tools:context=".StartActivity">
+
+    <include
+        style="@style/top_style"
+        layout="@layout/title_view" />
+
+    <LinearLayout
+        style="@style/LinearLayout"
+        android:layout_marginLeft="@dimen/dp_250"
+        android:id="@+id/linear"
+        android:background="@mipmap/start_bg"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/dp_20"
+            android:orientation="vertical">
+
+            <LinearLayout style="@style/left_style">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@mipmap/equipment_point" />
+
+                <TextView
+                    android:text="设备点"
+                    style="@style/left_text_style" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/left_style">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@mipmap/unqualified_point" />
+
+                <TextView
+                    android:text="不合格点"
+                    style="@style/left_text_style" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/left_style">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@mipmap/mast_point" />
+
+                <TextView
+                    android:text="柱杆"
+                    style="@style/left_text_style" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/left_style">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@mipmap/in_line" />
+
+                <TextView
+                    android:text="进线"
+                    style="@style/left_text_style"/>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/left_style">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@mipmap/out_line" />
+
+                <TextView
+                    android:text="出线"
+                    style="@style/left_text_style" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/left_style">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:src="@mipmap/blue_line" />
+
+                <TextView
+                    android:text="考试区域线"
+                    style="@style/left_text_style" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <sdkx.sectiontwoproject.myview.MyView
+                android:id="@+id/myView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <sdkx.sectiontwoproject.myview.MyViewCar
+                android:id="@+id/myview_car"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <include layout="@layout/bottom_view" />
+</RelativeLayout>
