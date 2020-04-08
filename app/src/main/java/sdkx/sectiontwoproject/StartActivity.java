@@ -5,12 +5,16 @@ import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonSyntaxException;
 import com.kongqw.serialportlibrary.Device;
 import com.kongqw.serialportlibrary.SerialPortFinder;
 import com.kongqw.serialportlibrary.SerialPortManager;
 import com.kongqw.serialportlibrary.listener.OnSerialPortDataListener;
+
+import org.json.JSONArray;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,13 +57,13 @@ public class StartActivity extends BaseActivity<String> {
     private Map map;
 
     public CrossBoundary crossBoundary;
-    private String s = "";
+    private String locationStr = "", locationStr1 = "";
+    private String fireStr = "", fireStr1 = "";
     StringBuffer stringBuffer;
-    private String filedStr;
-    private boolean isShow=false;
+    private boolean isShow = false;
 
-   private CarTrajectory carTrajectory;
     private PathInOrderPro pathInOrderPro;
+    private Filed filed;
 
     @Override
     public int intiLayout() {
@@ -72,7 +76,6 @@ public class StartActivity extends BaseActivity<String> {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
 
-        carTrajectory=new CarTrajectory();
         crossBoundary = new CrossBoundary();
         stringBuffer = new StringBuffer();
         serialPort();
@@ -104,15 +107,14 @@ public class StartActivity extends BaseActivity<String> {
     public void toActivityData(String flag, String object) {
         super.toActivityData(flag, object);
         Log.e("请求数据：" + flag, object);
-        filedStr = object;
         Gson gson = new Gson();
         if (flag.equals("考场")) {
             try {
 
-
-                Filed filed = gson.fromJson(object, Filed.class);
+                filed = gson.fromJson(object, Filed.class);
                 if (filed.getData() == null)
                     return;
+
                 for (int i = 0; i < filed.getData().size(); i++) {
                     mList.add(new SitePort(filed.getData().get(i).getLng(), filed.getData().get(i).getLat()));
                 }
@@ -133,6 +135,7 @@ public class StartActivity extends BaseActivity<String> {
                 map.put("androidId", "12345678");
                 noHttpRx.postHttp("车", HttpUrl.GETCAR_URL, map, null);
             } catch (JsonSyntaxException e) {
+                Log.e("场地解析异常：", e.getMessage());
             }
         }
         if (flag.equals("车")) {
@@ -140,9 +143,9 @@ public class StartActivity extends BaseActivity<String> {
                 Car car = gson.fromJson(object, Car.class);
                 myviewCar.getCar(car, lngLatToXYTools);
                 //录入车辆场地信息
-                crossBoundary.setMessage(filedStr,object,"");
-
+                crossBoundary.setMessage(JSON.toJSONString(filed.getData()), JSON.toJSONString(car.getData().getCarPoints()), "");
             } catch (JsonSyntaxException e) {
+                Log.e("车解析异常：", e.getMessage());
             }
 
         }
@@ -162,13 +165,14 @@ public class StartActivity extends BaseActivity<String> {
 //                Log.e("onCreate: device =", "onCreate: device root= " + devices.get(i).getRoot()
 //                        + "\nonCreate: device name= " + devices.get(i).getName()
 //                        + "\nonCreate: device file= " + devices.get(i).getFile());
+
+            //定位串口信息
             boolean openSerialPort = mSerialPortManager.setOnOpenSerialPortListener(this)
                     .setOnSerialPortDataListener(new OnSerialPortDataListener() {
                         @Override
                         public void onDataReceived(byte[] bytes) {
-                            Log.e("串口", "onDataReceived [ byte[] ]: " + Arrays.toString(bytes));
-                            Log.e("串口", "onDataReceived [ String ]: " + new String(bytes));
-                            final byte[] finalBytes = bytes;
+                            Log.e("定位串口", "onDataReceived [ byte[] ]: " + Arrays.toString(bytes));
+                            Log.e("定位串口", "onDataReceived [ String ]: " + new String(bytes));
                             try {
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
@@ -177,37 +181,53 @@ public class StartActivity extends BaseActivity<String> {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    s = new String(finalBytes);
-//                                    Log.e("数据是否正确：", crossBoundary.checkData(s) + "");
-//                                    if (crossBoundary.checkData(s)) {
-                                    String[] arr = s.split(",");
-                                    if (arr.length <= 20)
-                                        return;
-
-                                    try {
-                                        double lng = Double.parseDouble(arr[2]);
-                                        double lat = Double.parseDouble(arr[3]);
-                                        double angle = Double.parseDouble(arr[5]);
-                                        Log.e("截取的数据", "经度：" + lng + "纬度" + lat);
-                                        if (lngLatToXYTools != null && myviewCar != null) {
-                                            if (crossBoundary.isCross(s)&&!isShow) {
-                                                //true越出边界
-                                                 showDialog(StartActivity.this,false,"您已越出边界，考试结束");
-                                                 isShow=true;
-                                                 myviewCar.transferData();
-                                            }
-                                            if (!pathInOrderPro.detectionPath(lng,lat)) {
-                                                //false未按规定路线行驶
-                                                showDialog(StartActivity.this,false,"您未按规定路线行驶，考试结束");
-                                                isShow=true;
-                                                myviewCar.transferData();
-                                            }
-                                            myviewCar.getPoint(lngLatToXYTools.getLngLatToXyPro(lng, lat), angle);
+                                    locationStr = locationStr1 + new String(bytes);
+                                    if (locationStr.contains("$")) {
+                                        if (locationStr.indexOf("$") != locationStr.lastIndexOf("$")) {
+                                            locationStr1 = locationStr.substring(locationStr.indexOf("$"), locationStr.lastIndexOf("$") - 1);
+                                            locationStr = "";
+                                        } else {
+                                            locationStr1 = locationStr;
                                         }
-                                    } catch (NumberFormatException e) {
+
+                                    } else {
+                                        locationStr1 = locationStr;
+                                    }
+                                    Log.e("定位数据是否正确：", crossBoundary.checkData(locationStr1) + "");
+                                    if (crossBoundary.checkData(locationStr1)) {
+                                        String[] arr = locationStr1.split(",");
+//                                    if (arr.length <= 20)
+//                                        return;
+
+                                        try {
+                                            double lng = Double.parseDouble(arr[2]);
+                                            double lat = Double.parseDouble(arr[3]);
+                                            double angle = Double.parseDouble(arr[5]);
+                                            Log.e("定位截取的数据", "经度：" + lng + "纬度" + lat);
+                                            if (lngLatToXYTools != null && myviewCar != null && crossBoundary != null && pathInOrderPro != null) {
+                                                if (crossBoundary.isCross(locationStr1) && !isShow) {
+                                                    //true越出边界
+                                                    showDialog(StartActivity.this, false, "您已越出边界，考试结束");
+                                                    isShow = true;
+                                                    myviewCar.transferData();
+                                                }
+
+                                                if (!pathInOrderPro.detectionPath(lng, lat)) {
+                                                    //false未按规定路线行驶
+                                                    showDialog(StartActivity.this, false, "您未按规定路线行驶，考试结束");
+                                                    isShow = true;
+                                                    myviewCar.transferData();
+                                                }
+                                                myviewCar.getPoint(lngLatToXYTools.getLngLatToXyPro(lng, lat), angle);
+                                            }
+                                        } catch (NumberFormatException e) {
+                                            Log.e("定位串口数据NumberFormat：", e.getMessage());
+                                        } catch (NullPointerException e) {
+                                            Log.e("定位串口数据NullPointer：", e.getMessage());
+
+                                        }
                                     }
                                 }
-//                            }
                             });
                         }
 
@@ -224,12 +244,84 @@ public class StartActivity extends BaseActivity<String> {
                             });
                         }
                     })
-                    .openSerialPort(new File("/dev/ttyS4"), 115200);
+                    .openSerialPort(new File("/dev/ttyS3"), 115200);
 //                        .openSerialPort(devices.get(i).getFile(), 9600);
 
             Log.e("串口", "onCreate: openSerialPort = " + openSerialPort);
-        }
 
-//        }
+
+            //熄火串口信息
+
+            // 打开串口
+//            for (int i = 0; i < devices.size(); i++) {
+//                Log.e("onCreate: device =", "onCreate: device root= " + devices.get(i).getRoot()
+//                        + "\nonCreate: device name= " + devices.get(i).getName()
+//                        + "\nonCreate: device file= " + devices.get(i).getFile());
+            boolean openSerialPort2 = mSerialPortManager.setOnOpenSerialPortListener(this)
+                    .setOnSerialPortDataListener(new OnSerialPortDataListener() {
+                        @Override
+                        public void onDataReceived(byte[] bytes) {
+                            Log.e("熄火串口", "onDataReceived [ byte[] ]: " + Arrays.toString(bytes));
+                            Log.e("熄火串口", "onDataReceived [ String ]: " + new String(bytes));
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    fireStr = fireStr1 + new String(bytes);
+                                    if (fireStr.contains("AA4412")) {
+                                        if (fireStr.indexOf("AA4412") != fireStr.lastIndexOf("AA4412")) {
+                                            fireStr1 = fireStr.substring(fireStr.indexOf("AA4412"), fireStr.lastIndexOf("AA4412") - 1);
+                                            fireStr = "";
+                                        } else {
+                                            fireStr1 = fireStr;
+                                        }
+
+                                    } else {
+                                        fireStr1 = fireStr;
+                                    }
+                                    Log.e("熄火数据是否正确：", crossBoundary.checkDataStr(fireStr1) + "");
+                                    if (crossBoundary.checkDataStr(fireStr1)) {
+                                        try {
+                                            Log.e("熄火截取的数据", "是否：" + fireStr1);
+                                            if (fireStr1.equals("AA441204")) {
+                                                //true越出边界
+                                                showDialog(StartActivity.this, false, "您已熄火，考试结束");
+                                                isShow = true;
+                                                myviewCar.transferData();
+                                            }
+                                        } catch (NumberFormatException e) {
+                                            Log.e("熄火串口数据NumberFormat：", e.getMessage());
+                                        } catch (NullPointerException e) {
+                                            Log.e("熄火串口数据NullPointer：", e.getMessage());
+
+                                        }
+                                    }
+                                }
+                        });
+                    }
+
+            @Override
+            public void onDataSent ( byte[] bytes){
+                Log.e("串口", "onDataSent [ byte[] ]: " + Arrays.toString(bytes));
+                Log.e("串口", "onDataSent [ String ]: " + new String(bytes));
+                final byte[] finalBytes = bytes;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showToast(String.format("发送\n%s", new String(finalBytes)));
+                    }
+                });
+            }
+        })
+                    .openSerialPort(new File("/dev/ttyS4"), 115200);
+//                        .openSerialPort(devices.get(i).getFile(), 9600);
+
+        Log.e("串口", "onCreate: openSerialPort2 = " + openSerialPort2);
     }
+//        }
+}
 }

@@ -127,7 +127,7 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
      * @param isShow   是否显示关闭图标
      * @param context  中间显示的文本内容
      */
-    public void showDialog(Activity activity, boolean isShow, String context) {
+    public  void showDialog(Activity activity, boolean isShow, String context) {
         View rootView = View.inflate(this, R.layout.popwindow_view, null);
         TextView preTv = rootView.findViewById(R.id.pre_tv);
         TextView contentTv = rootView.findViewById(R.id.content_tv);

@@ -7,7 +7,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 
-import androidx.multidex.MultiDex;
+
 
 import com.liqi.nohttputils.RxNoHttpUtils;
 import com.liqi.nohttputils.nohttp.NoHttpInit;
@@ -15,6 +15,7 @@ import com.liqi.nohttputils.nohttp.NoHttpInit;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.multidex.MultiDex;
 import me.jessyan.autosize.AutoSizeConfig;
 import me.jessyan.autosize.unit.Subunits;
 
