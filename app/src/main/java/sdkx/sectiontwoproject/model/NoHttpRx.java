@@ -116,6 +116,7 @@ public class NoHttpRx implements IModelBiz {
                 .addParameter(mapParameter)
 //                .setOnDialogGetListener(onDialogGetListener)请求加载框
                 .setSign(this)
+                .setRetryCount(5)//重试次数
                 .setAnUnknownErrorHint("POST未知错误提示")
                 .builder(String.class, new OnIsRequestListener<String>() {
                     @Override

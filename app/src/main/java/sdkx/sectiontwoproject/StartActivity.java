@@ -17,6 +17,8 @@ import com.kongqw.serialportlibrary.listener.OnSerialPortDataListener;
 import org.json.JSONArray;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,8 +59,8 @@ public class StartActivity extends BaseActivity<String> {
     private Map map;
 
     public CrossBoundary crossBoundary;
-    private String locationStr = "", locationStr1 = "";
-    private String fireStr = "", fireStr1 = "";
+    private String locationStr = "", locationStr1 = "", locationStr2 = "";
+    private String fireStr = "", fireStr1 = "", fireStr2 = "";
     StringBuffer stringBuffer;
     private boolean isShow = false;
 
@@ -78,18 +80,17 @@ public class StartActivity extends BaseActivity<String> {
 
         crossBoundary = new CrossBoundary();
         stringBuffer = new StringBuffer();
-        serialPort();
 
-        location = new int[2];
-        myView.getLocationOnScreen(location);
-        myView.post(new Runnable() {
-            @Override
-            public void run() {
-//                Log.e("myView宽高：", myView.getWidth() + "---" + myView.getHeight());
-//                lngLatToXYTools = CarTrajectory.getSiteTools(myView.getWidth()-20, myView.getHeight()-20);
-
-            }
-        });
+//        location = new int[2];
+//        myView.getLocationOnScreen(location);
+//        myView.post(new Runnable() {
+//            @Override
+//            public void run() {
+////                Log.e("myView宽高：", myView.getWidth() + "---" + myView.getHeight());
+////                lngLatToXYTools = CarTrajectory.getSiteTools(myView.getWidth()-20, myView.getHeight()-20);
+//
+//            }
+//        });
 
 //        showDialog(this,false,"恭喜您本次考试以通过，从此您就是有证的人");
 
@@ -144,6 +145,7 @@ public class StartActivity extends BaseActivity<String> {
                 myviewCar.getCar(car, lngLatToXYTools);
                 //录入车辆场地信息
                 crossBoundary.setMessage(JSON.toJSONString(filed.getData()), JSON.toJSONString(car.getData().getCarPoints()), "");
+                serialPort();
             } catch (JsonSyntaxException e) {
                 Log.e("车解析异常：", e.getMessage());
             }
@@ -165,7 +167,7 @@ public class StartActivity extends BaseActivity<String> {
 //                Log.e("onCreate: device =", "onCreate: device root= " + devices.get(i).getRoot()
 //                        + "\nonCreate: device name= " + devices.get(i).getName()
 //                        + "\nonCreate: device file= " + devices.get(i).getFile());
-
+//            }
             //定位串口信息
             boolean openSerialPort = mSerialPortManager.setOnOpenSerialPortListener(this)
                     .setOnSerialPortDataListener(new OnSerialPortDataListener() {
@@ -181,49 +183,137 @@ public class StartActivity extends BaseActivity<String> {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    locationStr = locationStr1 + new String(bytes);
-                                    if (locationStr.contains("$")) {
-                                        if (locationStr.indexOf("$") != locationStr.lastIndexOf("$")) {
-                                            locationStr1 = locationStr.substring(locationStr.indexOf("$"), locationStr.lastIndexOf("$") - 1);
-                                            locationStr = "";
-                                        } else {
-                                            locationStr1 = locationStr;
-                                        }
-
-                                    } else {
-                                        locationStr1 = locationStr;
-                                    }
+                                    locationStr1 = new String(bytes);
+//                                    locationStr = locationStr2 + new String(bytes);
+//                                    if (locationStr.contains("$")) {
+//                                        Log.e("定位数据$：", locationStr);
+//                                        Log.e("数据", locationStr.indexOf("$") + "----" + locationStr.lastIndexOf("$") + "");
+//                                        locationStr1 = locationStr;
+//                                        locationStr2 = locationStr;
+//
+//                                    } else {
+//                                        locationStr1 = locationStr;
+//                                        locationStr2 = locationStr;
+//                                    }
+                                    Log.e("定位数据：", locationStr1);
                                     Log.e("定位数据是否正确：", crossBoundary.checkData(locationStr1) + "");
                                     if (crossBoundary.checkData(locationStr1)) {
                                         String[] arr = locationStr1.split(",");
 //                                    if (arr.length <= 20)
 //                                        return;
 
-                                        try {
-                                            double lng = Double.parseDouble(arr[2]);
-                                            double lat = Double.parseDouble(arr[3]);
-                                            double angle = Double.parseDouble(arr[5]);
-                                            Log.e("定位截取的数据", "经度：" + lng + "纬度" + lat);
-                                            if (lngLatToXYTools != null && myviewCar != null && crossBoundary != null && pathInOrderPro != null) {
-                                                if (crossBoundary.isCross(locationStr1) && !isShow) {
-                                                    //true越出边界
-                                                    showDialog(StartActivity.this, false, "您已越出边界，考试结束");
-                                                    isShow = true;
-                                                    myviewCar.transferData();
-                                                }
+//                                        try {
+                                        double lng = Double.parseDouble(arr[2]);
+                                        double lat = Double.parseDouble(arr[3]);
+                                        double angle = Double.parseDouble(arr[5]);
+                                        Log.e("定位截取的数据", "经度：" + lng + "纬度" + lat);
+//                                        if (lngLatToXYTools != null && myviewCar != null) {
+                                        myviewCar.getPoint(lngLatToXYTools.getLngLatToXyPro(lng, lat), angle);
+//                                        }
+//                                        if (crossBoundary != null && pathInOrderPro != null) {
+                                        if (crossBoundary.isCross(locationStr1) && !isShow) {
+                                            //true越出边界
+                                            showDialog(StartActivity.this, false, "您已越出边界，考试结束");
+                                            isShow = true;
+                                            myviewCar.transferData();
+                                        }
+                                        Boolean msgboo = pathInOrderPro.detectionPath(lng, lat);
+                                        if (msgboo != null) {
+                                            if (msgboo == false && !isShow) {
+                                                //false未按规定路线行驶
+                                                showDialog(StartActivity.this, false, "您未按规定路线行驶，考试结束");
+                                                isShow = true;
+                                                myviewCar.transferData();
+                                            }
+                                        }
+//                                        }
+//                                        } catch (NumberFormatException e) {
+//                                            Log.e("定位串口数据NumberFormat：", e.getMessage());
+//                                        } catch (NullPointerException e) {
+//                                            Log.e("定位串口数据NullPointer：", e.getMessage());
+//
+//                                        }
+                                    }
+                                }
+                            });
+                        }
 
-                                                if (!pathInOrderPro.detectionPath(lng, lat)) {
-                                                    //false未按规定路线行驶
-                                                    showDialog(StartActivity.this, false, "您未按规定路线行驶，考试结束");
-                                                    isShow = true;
-                                                    myviewCar.transferData();
-                                                }
-                                                myviewCar.getPoint(lngLatToXYTools.getLngLatToXyPro(lng, lat), angle);
+                        @Override
+                        public void onDataSent(byte[] bytes) {
+                            Log.e("串口", "onDataSent [ byte[] ]: " + Arrays.toString(bytes));
+                            Log.e("串口", "onDataSent [ String ]: " + new String(bytes));
+                            final byte[] finalBytes = bytes;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showToast(String.format("发送\n%s", new String(finalBytes)));
+                                }
+                            });
+                        }
+                    })
+                    .openSerialPort(new File("/dev/ttyS2"), 115200);
+//                        .openSerialPort(devices.get(i).getFile(), 9600);
+
+            Log.e("串口", "onCreate: openSerialPort = " + openSerialPort);
+
+
+            //熄火串口信息
+            mSerialPortManager2 = new SerialPortManager();
+            // 打开串口
+//            for (int i = 0; i < devices.size(); i++) {
+//                Log.e("onCreate: device =", "onCreate: device root= " + devices.get(i).getRoot()
+//                        + "\nonCreate: device name= " + devices.get(i).getName()
+//                        + "\nonCreate: device file= " + devices.get(i).getFile());
+//            }
+            boolean openSerialPort2 = mSerialPortManager2.setOnOpenSerialPortListener(this)
+                    .setOnSerialPortDataListener(new OnSerialPortDataListener() {
+                        @Override
+                        public void onDataReceived(byte[] bytes) {
+                            Log.e("熄火串口", "onDataReceived [ byte[] ]: " + Arrays.toString(bytes));
+                            Log.e("熄火串口", "onDataReceived [ String ]: " + new BigInteger(1, bytes).toString(16));
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    fireStr = fireStr2 + new BigInteger(1, bytes).toString(16);
+                                    fireStr = fireStr.toUpperCase();
+//                                    fireStr1 =   new BigInteger(1, bytes).toString(16);
+//                                    fireStr1=fireStr1.toUpperCase();
+                                    if (fireStr.contains("AA4412")) {
+                                        Log.e("熄火数据AA4412：", fireStr);
+                                        Log.e("数据", fireStr.indexOf("AA4412") + "----" + fireStr.lastIndexOf("AA4412"));
+                                        if (fireStr.indexOf("AA4412") != fireStr.lastIndexOf("AA4412")) {
+                                            fireStr1 = fireStr.substring(fireStr.indexOf("AA4412"), fireStr.lastIndexOf("AA4412"));
+                                            fireStr2 = fireStr.substring(fireStr.lastIndexOf("AA4412"));
+                                        } else {
+                                            fireStr1 = fireStr;
+                                            fireStr2 = fireStr;
+                                        }
+                                    } else {
+                                        fireStr1 = fireStr;
+                                        fireStr2 = fireStr;
+
+                                    }
+                                    Log.e("熄火数据：", fireStr1);
+                                    Log.e("熄火数据是否正确：", crossBoundary.checkDataStr(fireStr1) + "");
+                                    if (crossBoundary.checkDataStr(fireStr1)) {
+                                        fireStr2 = "";
+                                        try {
+                                            Log.e("熄火截取的数据", "是否：" + fireStr1);
+                                            if (fireStr1.contains("AA441204") && !isShow) {
+                                                //熄火
+                                                showDialog(StartActivity.this, false, "您已熄火，考试结束");
+                                                isShow = true;
+                                                myviewCar.transferData();
                                             }
                                         } catch (NumberFormatException e) {
-                                            Log.e("定位串口数据NumberFormat：", e.getMessage());
+                                            Log.e("熄火串口数据NumberFormat：", e.getMessage());
                                         } catch (NullPointerException e) {
-                                            Log.e("定位串口数据NullPointer：", e.getMessage());
+                                            Log.e("熄火串口数据NullPointer：", e.getMessage());
 
                                         }
                                     }
@@ -244,84 +334,12 @@ public class StartActivity extends BaseActivity<String> {
                             });
                         }
                     })
-                    .openSerialPort(new File("/dev/ttyS3"), 115200);
-//                        .openSerialPort(devices.get(i).getFile(), 9600);
-
-            Log.e("串口", "onCreate: openSerialPort = " + openSerialPort);
-
-
-            //熄火串口信息
-
-            // 打开串口
-//            for (int i = 0; i < devices.size(); i++) {
-//                Log.e("onCreate: device =", "onCreate: device root= " + devices.get(i).getRoot()
-//                        + "\nonCreate: device name= " + devices.get(i).getName()
-//                        + "\nonCreate: device file= " + devices.get(i).getFile());
-            boolean openSerialPort2 = mSerialPortManager.setOnOpenSerialPortListener(this)
-                    .setOnSerialPortDataListener(new OnSerialPortDataListener() {
-                        @Override
-                        public void onDataReceived(byte[] bytes) {
-                            Log.e("熄火串口", "onDataReceived [ byte[] ]: " + Arrays.toString(bytes));
-                            Log.e("熄火串口", "onDataReceived [ String ]: " + new String(bytes));
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    fireStr = fireStr1 + new String(bytes);
-                                    if (fireStr.contains("AA4412")) {
-                                        if (fireStr.indexOf("AA4412") != fireStr.lastIndexOf("AA4412")) {
-                                            fireStr1 = fireStr.substring(fireStr.indexOf("AA4412"), fireStr.lastIndexOf("AA4412") - 1);
-                                            fireStr = "";
-                                        } else {
-                                            fireStr1 = fireStr;
-                                        }
-
-                                    } else {
-                                        fireStr1 = fireStr;
-                                    }
-                                    Log.e("熄火数据是否正确：", crossBoundary.checkDataStr(fireStr1) + "");
-                                    if (crossBoundary.checkDataStr(fireStr1)) {
-                                        try {
-                                            Log.e("熄火截取的数据", "是否：" + fireStr1);
-                                            if (fireStr1.equals("AA441204")) {
-                                                //true越出边界
-                                                showDialog(StartActivity.this, false, "您已熄火，考试结束");
-                                                isShow = true;
-                                                myviewCar.transferData();
-                                            }
-                                        } catch (NumberFormatException e) {
-                                            Log.e("熄火串口数据NumberFormat：", e.getMessage());
-                                        } catch (NullPointerException e) {
-                                            Log.e("熄火串口数据NullPointer：", e.getMessage());
-
-                                        }
-                                    }
-                                }
-                        });
-                    }
-
-            @Override
-            public void onDataSent ( byte[] bytes){
-                Log.e("串口", "onDataSent [ byte[] ]: " + Arrays.toString(bytes));
-                Log.e("串口", "onDataSent [ String ]: " + new String(bytes));
-                final byte[] finalBytes = bytes;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showToast(String.format("发送\n%s", new String(finalBytes)));
-                    }
-                });
-            }
-        })
                     .openSerialPort(new File("/dev/ttyS4"), 115200);
 //                        .openSerialPort(devices.get(i).getFile(), 9600);
 
-        Log.e("串口", "onCreate: openSerialPort2 = " + openSerialPort2);
-    }
+            Log.e("串口", "onCreate: openSerialPort2 = " + openSerialPort2);
+        }
 //        }
-}
+    }
+
 }

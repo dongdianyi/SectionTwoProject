@@ -41,7 +41,7 @@ import sdkxsoft.com.pojo.XyPojo;
 
 public abstract class BaseActivity<T> extends AppCompatActivity implements IView, OnOpenSerialPortListener {
 
-    public SerialPortManager mSerialPortManager;
+    public SerialPortManager mSerialPortManager,mSerialPortManager2;
 
 
     @Override
@@ -168,24 +168,24 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
             }
         });
 
-        dialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        dialog.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-            @Override
-            public void onSystemUiVisibilityChange(int visibility) {
-                int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                        //布局位于状态栏下方
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                        //隐藏导航栏
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-                if (Build.VERSION.SDK_INT >= 19) {
-                    uiOptions |= 0x00001000;
-                } else {
-                    uiOptions |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
-                }
-                dialog.getWindow().getDecorView().setSystemUiVisibility(uiOptions);
-            }
-        });
+//        dialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+//        dialog.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+//            @Override
+//            public void onSystemUiVisibilityChange(int visibility) {
+//                int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+//                        //布局位于状态栏下方
+//                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+//                        //隐藏导航栏
+//                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+//                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+//                if (Build.VERSION.SDK_INT >= 19) {
+//                    uiOptions |= 0x00001000;
+//                } else {
+//                    uiOptions |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
+//                }
+//                dialog.getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+//            }
+//        });
 
 
         WindowManager.LayoutParams params =
@@ -211,6 +211,10 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
         if (null != mSerialPortManager) {
             mSerialPortManager.closeSerialPort();
             mSerialPortManager = null;
+        }
+        if (null != mSerialPortManager2) {
+            mSerialPortManager2.closeSerialPort();
+            mSerialPortManager2 = null;
         }
         super.onDestroy();
     }

@@ -94,7 +94,7 @@ public class MyView extends View {
         if (pointX.length != 8||pointY.length!=8) {
             return;
         }
-
+        paint.setAntiAlias(true);
         Path path = new Path();
         path.moveTo(pointX[0], pointY[0]);
         for (int i = 1; i < pointX.length; i++) {

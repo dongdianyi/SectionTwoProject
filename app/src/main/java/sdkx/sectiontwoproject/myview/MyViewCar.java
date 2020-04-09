@@ -198,7 +198,7 @@ public class MyViewCar extends View {
             for (int i = 2; i < xyPojoXY.size(); i=i+2) {
                 mPath.lineTo(xyPojoXY.get(i),xyPojoXY.get(i+1));
             }
-//            canvas.drawPath(mPath, paint);
+            canvas.drawPath(mPath, paint);
 
         }
 
