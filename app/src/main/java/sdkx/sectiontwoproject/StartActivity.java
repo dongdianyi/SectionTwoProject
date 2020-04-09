@@ -61,7 +61,6 @@ public class StartActivity extends BaseActivity<String> {
     public CrossBoundary crossBoundary;
     private String locationStr = "", locationStr1 = "", locationStr2 = "";
     private String fireStr = "", fireStr1 = "", fireStr2 = "";
-    StringBuffer stringBuffer;
     private boolean isShow = false;
 
     private PathInOrderPro pathInOrderPro;
@@ -79,7 +78,6 @@ public class StartActivity extends BaseActivity<String> {
         linear.setLayoutParams(layoutParams);
 
         crossBoundary = new CrossBoundary();
-        stringBuffer = new StringBuffer();
 
 //        location = new int[2];
 //        myView.getLocationOnScreen(location);
@@ -133,7 +131,8 @@ public class StartActivity extends BaseActivity<String> {
                 myView.setLayoutParams(l);
                 myviewCar.setLayoutParams(l);
                 myView.getPoints(xyPojos);
-                map.put("androidId", "12345678");
+                map.clear();
+                map.put("androidId", HttpUrl.ANDROIDID);
                 noHttpRx.postHttp("车", HttpUrl.GETCAR_URL, map, null);
             } catch (JsonSyntaxException e) {
                 Log.e("场地解析异常：", e.getMessage());
@@ -183,18 +182,23 @@ public class StartActivity extends BaseActivity<String> {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    locationStr1 = new String(bytes);
-//                                    locationStr = locationStr2 + new String(bytes);
-//                                    if (locationStr.contains("$")) {
-//                                        Log.e("定位数据$：", locationStr);
-//                                        Log.e("数据", locationStr.indexOf("$") + "----" + locationStr.lastIndexOf("$") + "");
-//                                        locationStr1 = locationStr;
-//                                        locationStr2 = locationStr;
-//
-//                                    } else {
-//                                        locationStr1 = locationStr;
-//                                        locationStr2 = locationStr;
-//                                    }
+//                                    locationStr1 = new String(bytes);
+                                    locationStr = locationStr2 + new String(bytes);
+                                    if (locationStr.contains("$")) {
+                                        Log.e("定位数据$：", locationStr);
+                                        Log.e("数据", locationStr.indexOf("$") + "----" + locationStr.indexOf("$",locationStr.indexOf("$")+1));
+                                        if (locationStr.indexOf("$") <locationStr.indexOf("$",locationStr.indexOf("$")+1)) {
+                                            locationStr1 = locationStr.substring(locationStr.indexOf("$"), locationStr.indexOf("$",locationStr.indexOf("$")+1));
+                                            locationStr2 = locationStr.substring(locationStr.indexOf("$",locationStr.indexOf("$")+1));
+                                            Log.e("locationStr", locationStr1 + "\n" + locationStr2);
+                                        } else {
+                                            locationStr2 = locationStr;
+                                            return;
+                                        }
+
+                                    } else {
+                                        return;
+                                    }
                                     Log.e("定位数据：", locationStr1);
                                     Log.e("定位数据是否正确：", crossBoundary.checkData(locationStr1) + "");
                                     if (crossBoundary.checkData(locationStr1)) {
@@ -279,42 +283,36 @@ public class StartActivity extends BaseActivity<String> {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+
                                     fireStr = fireStr2 + new BigInteger(1, bytes).toString(16);
                                     fireStr = fireStr.toUpperCase();
 //                                    fireStr1 =   new BigInteger(1, bytes).toString(16);
 //                                    fireStr1=fireStr1.toUpperCase();
                                     if (fireStr.contains("AA4412")) {
                                         Log.e("熄火数据AA4412：", fireStr);
-                                        Log.e("数据", fireStr.indexOf("AA4412") + "----" + fireStr.lastIndexOf("AA4412"));
-                                        if (fireStr.indexOf("AA4412") != fireStr.lastIndexOf("AA4412")) {
-                                            fireStr1 = fireStr.substring(fireStr.indexOf("AA4412"), fireStr.lastIndexOf("AA4412"));
-                                            fireStr2 = fireStr.substring(fireStr.lastIndexOf("AA4412"));
+                                        Log.e("数据", fireStr.indexOf("AA4412") + "----" + fireStr.indexOf("AA4412",fireStr.indexOf("AA4412")+1));
+                                        if (fireStr.indexOf("AA4412") <fireStr.indexOf("AA4412",fireStr.indexOf("AA4412")+1)) {
+                                            fireStr1 = fireStr.substring(fireStr.indexOf("AA4412"), fireStr.indexOf("AA4412",fireStr.indexOf("AA4412")+1));
+                                            fireStr2 = fireStr.substring(fireStr.indexOf("AA4412",fireStr.indexOf("AA4412")+1));
+                                            Log.e("fireStr", fireStr1 + "\n" + fireStr2);
+
                                         } else {
-                                            fireStr1 = fireStr;
                                             fireStr2 = fireStr;
+                                            return;
                                         }
                                     } else {
-                                        fireStr1 = fireStr;
-                                        fireStr2 = fireStr;
-
+                                        return;
                                     }
                                     Log.e("熄火数据：", fireStr1);
                                     Log.e("熄火数据是否正确：", crossBoundary.checkDataStr(fireStr1) + "");
                                     if (crossBoundary.checkDataStr(fireStr1)) {
                                         fireStr2 = "";
-                                        try {
-                                            Log.e("熄火截取的数据", "是否：" + fireStr1);
-                                            if (fireStr1.contains("AA441204") && !isShow) {
-                                                //熄火
-                                                showDialog(StartActivity.this, false, "您已熄火，考试结束");
-                                                isShow = true;
-                                                myviewCar.transferData();
-                                            }
-                                        } catch (NumberFormatException e) {
-                                            Log.e("熄火串口数据NumberFormat：", e.getMessage());
-                                        } catch (NullPointerException e) {
-                                            Log.e("熄火串口数据NullPointer：", e.getMessage());
-
+                                        Log.e("熄火截取的数据", "是否：" + fireStr1);
+                                        if (fireStr1.contains("AA441204") && !isShow) {
+                                            //熄火
+                                            showDialog(StartActivity.this, false, "您已熄火，考试结束");
+                                            isShow = true;
+                                            myviewCar.transferData();
                                         }
                                     }
                                 }
@@ -334,7 +332,7 @@ public class StartActivity extends BaseActivity<String> {
                             });
                         }
                     })
-                    .openSerialPort(new File("/dev/ttyS4"), 115200);
+                    .openSerialPort(new File("/dev/ttyS3"), 115200);
 //                        .openSerialPort(devices.get(i).getFile(), 9600);
 
             Log.e("串口", "onCreate: openSerialPort2 = " + openSerialPort2);

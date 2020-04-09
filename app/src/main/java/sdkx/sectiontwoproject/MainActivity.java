@@ -2,16 +2,26 @@ package sdkx.sectiontwoproject;
 
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import sdkx.sectiontwoproject.app.MyApplication;
 import sdkx.sectiontwoproject.base.BaseActivity;
+import sdkx.sectiontwoproject.http.HttpUrl;
+import sdkx.sectiontwoproject.model.NoHttpRx;
+
+import static sdkx.sectiontwoproject.http.HttpUrl.SERIALNUMBER;
 
 public class MainActivity extends BaseActivity {
 
@@ -21,6 +31,8 @@ public class MainActivity extends BaseActivity {
     LinearLayout linear;
     @BindView(R.id.pre_tv)
     TextView preTv;
+    private NoHttpRx noHttpRx;
+    private Map map;
 
     @Override
     public int intiLayout() {
@@ -31,9 +43,10 @@ public class MainActivity extends BaseActivity {
     public void initData() {
         exitLinear.getBackground().setAlpha(51);
         preTv.getBackground().setAlpha(120);
-        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(MyApplication.getInstance().getWidth()/2, MyApplication.getInstance().getHeight()/3);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(MyApplication.getInstance().getWidth() / 2, MyApplication.getInstance().getHeight() / 3);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
+        Log.e("SERIALNUMBER",SERIALNUMBER);
     }
 
     @OnClick({R.id.exit_linear, R.id.pre_tv})
@@ -41,13 +54,26 @@ public class MainActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.exit_linear:
                 //退出程序
-                showDialog(this,true,"确定退出系统吗？");
+                showDialog(this, true, "确定退出系统吗？");
                 break;
             case R.id.pre_tv:
                 //跳转个人信息界面
-                startActivity(new Intent(this, PerInfActivity.class));
-                finish();
+                noHttpRx = new NoHttpRx(this);
+                map = new HashMap();
+                map.put("androidId", HttpUrl.ANDROIDID);
+                noHttpRx.postHttpJson("考生信息", HttpUrl.PREPAREEXAM_URL, JSON.toJSONString(map), null);
+
                 break;
         }
+    }
+
+    @Override
+    public void toActivityData(String flag, String object) {
+        super.toActivityData(flag, object);
+        Intent intent=new Intent(this, PerInfActivity.class);
+        intent.putExtra("perin",object);
+        startActivity(intent);
+        finish();
+
     }
 }

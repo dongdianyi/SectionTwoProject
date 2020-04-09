@@ -275,7 +275,7 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
      *
      * @param
      */
-    public void onSend(String sendContent) {
+    public void onSend(String sendContent,SerialPortManager serialPortManager) {
         if (TextUtils.isEmpty(sendContent)) {
             Log.e("串口", "onSend: 发送内容为 null");
             return;
@@ -283,7 +283,7 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
 
         byte[] sendContentBytes = sendContent.getBytes();
 
-        boolean sendBytes = mSerialPortManager.sendBytes(sendContentBytes);
+        boolean sendBytes = serialPortManager.sendBytes(sendContentBytes);
         Log.e("串口", "onSend: sendBytes = " + sendBytes);
         showToast(sendBytes ? "发送成功" : "发送失败");
     }

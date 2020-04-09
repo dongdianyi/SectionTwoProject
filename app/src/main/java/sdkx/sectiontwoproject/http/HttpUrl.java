@@ -15,5 +15,16 @@ public interface HttpUrl {
     //查询考试车辆数据
     String GETCAR_URL="/android/v1/exam/getCarData";
 
+    //获取考生信息
+    String PREPAREEXAM_URL="/android/v1/exam/prepareExam";
+
+
+
+
+    String ANDROIDID="12345678";
+
+    //设备唯一标识
+    String SERIALNUMBER = android.os.Build.SERIAL;
+
 
 }

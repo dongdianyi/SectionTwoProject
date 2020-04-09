@@ -69,7 +69,7 @@ public class /**/CrossBoundary {
         }
         //返回解析后的数据
         Map<String, String> analysis = analysis(data);
-        if(analysis == null){
+        if (analysis == null) {
             return false;//校验不正确或者数据不正确返回null
         }
         // 插入数据库 TODO 存到个list?
@@ -95,7 +95,7 @@ public class /**/CrossBoundary {
      */
     public Map<String, String> analysis(String data) {
         String[] split = data.split(",");
-        if(split.length < 6){
+        if (split.length < 6) {
             return null;
         }
         Map<String, String> result = new HashMap<String, String>();
@@ -195,7 +195,7 @@ public class /**/CrossBoundary {
 //    }
     public boolean checkData(String data) {
         try {
-            data=data.replaceAll("\r","").replaceAll("\n","");
+            data = data.replaceAll("\r", "").replaceAll("\n", "");
             // 异或校验值
             String checkValue = data.substring(data.length() - 3, data.length()).replace("*", "");
             // 截出进行异或校验的数据内容, 并转成16进制
@@ -212,43 +212,44 @@ public class /**/CrossBoundary {
             // 和发送的结果比较
             int parseInt = Integer.parseInt(checkValue, 16);
             return parseInt == totle;
-        }catch (StringIndexOutOfBoundsException e){
+        } catch (StringIndexOutOfBoundsException e) {
             return false;
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return false;
         }
     }
+
     public boolean checkDataStr(String data) {
 
-        try{
-        // 异或校验值
-        if (data.length() <= 3) {
+        try {
+            // 异或校验值
+            if (data.length() <= 3) {
+                return false;
+            }
+            String checkValue = data.substring(data.length() - 2, data.length());
+            // 截出进行异或校验的数据内容, 并转成16进制
+            String hex = data.substring(0, data.length() - 2);
+            long totle = 0;
+            // 取到首位十六进制 0x**
+            totle = Long.parseLong(hex.substring(0, 2), 16);
+            long xor = 0;
+            for (int i = 2; i < hex.length(); i += 2) {
+                // 进行异或 0x** ^ 0x**
+                xor = Long.parseLong(hex.substring(i, i + 2), 16);
+                totle = totle ^ xor;
+            }
+            // 和发送的结果比较
+            String totleStr = Long.toHexString(totle);
+            if (totleStr.length() == 1) {
+                totleStr = "0" + totleStr;
+            }
+            Log.e("输出数据：", checkValue + "\n" + totleStr);
+            return totleStr.equalsIgnoreCase(checkValue);
+        } catch (StringIndexOutOfBoundsException e) {
+            return false;
+        } catch (NumberFormatException e) {
             return false;
         }
-        String checkValue = data.substring(data.length() - 2, data.length());
-        // 截出进行异或校验的数据内容, 并转成16进制
-        String hex = data.substring(0, data.length() - 2);
-        long totle = 0;
-        // 取到首位十六进制 0x**
-        totle = Long.parseLong(hex.substring(0, 2), 16);
-        long xor = 0;
-        for (int i = 2; i < hex.length(); i += 2) {
-            // 进行异或 0x** ^ 0x**
-            xor = Long.parseLong(hex.substring(i, i + 2), 16);
-            totle = totle ^ xor;
-        }
-        // 和发送的结果比较
-        String totleStr = Long.toHexString(totle);
-        if (totleStr.length() == 1) {
-            totleStr = "0" + totleStr;
-        }
-        Log.e("输出数据：", checkValue + "\n" + totleStr);
-        return totleStr.equalsIgnoreCase(checkValue);
-    }catch (StringIndexOutOfBoundsException e){
-        return false;
-    }catch (NumberFormatException e){
-        return false;
-    }
     }
 
     /**
@@ -421,16 +422,16 @@ public class /**/CrossBoundary {
      * @param placeStr   : 场地的字符串
      * @param carStr     : 车辆的字符串
      * @param examineeId : 考生id
-*/
+     */
     public void setMessage(String placeStr, String carStr, String examineeId) {
-    Log.e("setMessage数据：","placestr"+placeStr+"carStr"+carStr+"examineeId"+examineeId);
-    try {
-    this.place = JSONArray.parseArray(placeStr, Point.class);
-    this.car = JSONArray.parseArray(carStr, Point.class);
-    this.examineeId = examineeId;
-    } catch (JSONException e) {
-    Log.e("setMessage解析异常",e.getMessage());
-    }
+        Log.e("setMessage数据：", "placestr" + placeStr + "carStr" + carStr + "examineeId" + examineeId);
+        try {
+            this.place = JSONArray.parseArray(placeStr, Point.class);
+            this.car = JSONArray.parseArray(carStr, Point.class);
+            this.examineeId = examineeId;
+        } catch (JSONException e) {
+            Log.e("setMessage解析异常", e.getMessage());
+        }
     }
 
     /**
@@ -452,137 +453,137 @@ public class /**/CrossBoundary {
 //    }
 
 
-        /**
-         * 录入场地
-         */
-        public void setPlace (String placeStr){
-            this.place = JSONArray.parseArray(placeStr, Point.class);
-        }
-
-        /**
-         * 录入车辆
-         */
-        public void setCar (String carStr){
-            this.car = JSONArray.parseArray(carStr, Point.class);
-        }
-
-        /**
-         * 录入考试
-         */
-        public void setExamineeId (String examineeId){
-            this.examineeId = examineeId;
-        }
-
+    /**
+     * 录入场地
+     */
+    public void setPlace(String placeStr) {
+        this.place = JSONArray.parseArray(placeStr, Point.class);
     }
 
     /**
-     * 经纬度的点(lng, lat)
-     *
-     * @author wzr
+     * 录入车辆
      */
-    class Point {
-        private String number;// 序号
-        private double lng = 0;// 经度
-        private double lat = 0;// 纬度
-        private double side = 0;// 对边 y
-        private double hypotenuse = 0;// 斜边 x
-        private double vertex = 0;// 角度
-
-        /**
-         * 判断所有属性是否有空的,""
-         *
-         * @return
-         */
-        public boolean isAllNull() {
-            if (0 == this.lng) {
-                System.out.println("lng is null");
-                return false;
-            }
-            if (0 == this.lat) {
-                System.out.println("lat is null");
-                return false;
-            }
-            if (0 == this.side) {
-                System.out.println("side is null");
-                return false;
-            }
-            if (0 == this.hypotenuse) {
-                System.out.println("hypotenuse is null");
-                return false;
-            }
-            return true;
-        }
-
-        public Point() {
-            super();
-        }
-
-        public Point(double lng, double lat) {
-            super();
-            this.lng = lng;
-            this.lat = lat;
-        }
-
-        public Point(double side, double hypotenuse, double vertex) {
-            super();
-            this.side = side;
-            this.hypotenuse = hypotenuse;
-            this.vertex = vertex;
-        }
-
-        public Point(double lng, double lat, double side, double hypotenuse) {
-            super();
-            this.lng = lng;
-            this.lat = lat;
-            this.side = side;
-            this.hypotenuse = hypotenuse;
-        }
-
-        public String getNumber() {
-            return number;
-        }
-
-        public void setNumber(String number) {
-            this.number = number;
-        }
-
-        public double getSide() {
-            return side;
-        }
-
-        public void setSide(double side) {
-            this.side = side;
-        }
-
-        public double getHypotenuse() {
-            return hypotenuse;
-        }
-
-        public void setHypotenuse(double hypotenuse) {
-            this.hypotenuse = hypotenuse;
-        }
-
-        public double getLng() {
-            return lng;
-        }
-
-        public void setLng(double lng) {
-            this.lng = lng;
-        }
-
-        public double getLat() {
-            return lat;
-        }
-
-        public void setLat(double lat) {
-            this.lat = lat;
-        }
-
-        public double getVertex() {
-            return vertex;
-        }
-
-        public void setVertex(double vertex) {
-            this.vertex = vertex;
-        }
+    public void setCar(String carStr) {
+        this.car = JSONArray.parseArray(carStr, Point.class);
     }
+
+    /**
+     * 录入考试
+     */
+    public void setExamineeId(String examineeId) {
+        this.examineeId = examineeId;
+    }
+
+}
+
+/**
+ * 经纬度的点(lng, lat)
+ *
+ * @author wzr
+ */
+class Point {
+    private String number;// 序号
+    private double lng = 0;// 经度
+    private double lat = 0;// 纬度
+    private double side = 0;// 对边 y
+    private double hypotenuse = 0;// 斜边 x
+    private double vertex = 0;// 角度
+
+    /**
+     * 判断所有属性是否有空的,""
+     *
+     * @return
+     */
+    public boolean isAllNull() {
+        if (0 == this.lng) {
+            System.out.println("lng is null");
+            return false;
+        }
+        if (0 == this.lat) {
+            System.out.println("lat is null");
+            return false;
+        }
+        if (0 == this.side) {
+            System.out.println("side is null");
+            return false;
+        }
+        if (0 == this.hypotenuse) {
+            System.out.println("hypotenuse is null");
+            return false;
+        }
+        return true;
+    }
+
+    public Point() {
+        super();
+    }
+
+    public Point(double lng, double lat) {
+        super();
+        this.lng = lng;
+        this.lat = lat;
+    }
+
+    public Point(double side, double hypotenuse, double vertex) {
+        super();
+        this.side = side;
+        this.hypotenuse = hypotenuse;
+        this.vertex = vertex;
+    }
+
+    public Point(double lng, double lat, double side, double hypotenuse) {
+        super();
+        this.lng = lng;
+        this.lat = lat;
+        this.side = side;
+        this.hypotenuse = hypotenuse;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public double getSide() {
+        return side;
+    }
+
+    public void setSide(double side) {
+        this.side = side;
+    }
+
+    public double getHypotenuse() {
+        return hypotenuse;
+    }
+
+    public void setHypotenuse(double hypotenuse) {
+        this.hypotenuse = hypotenuse;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getVertex() {
+        return vertex;
+    }
+
+    public void setVertex(double vertex) {
+        this.vertex = vertex;
+    }
+}

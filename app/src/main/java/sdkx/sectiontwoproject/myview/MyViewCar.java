@@ -194,8 +194,9 @@ public class MyViewCar extends View {
             paint.setAntiAlias(false);
             //画虚线
             paint.setPathEffect(new DashPathEffect(new float[]{4, 4}, 0));
+            mPath.reset();
             mPath.moveTo(xyPojoXY.get(0), xyPojoXY.get(1));
-            for (int i = 2; i < xyPojoXY.size(); i=i+2) {
+            for (int i = 2; i < xyPojoXY.size()-1; i=i+2) {
                 mPath.lineTo(xyPojoXY.get(i),xyPojoXY.get(i+1));
             }
             canvas.drawPath(mPath, paint);
