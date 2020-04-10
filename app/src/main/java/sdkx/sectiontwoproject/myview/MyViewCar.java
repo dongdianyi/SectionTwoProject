@@ -70,8 +70,8 @@ public class MyViewCar extends View {
         length = car.getData().getLength() * lngLatToXYTools.getxScaling();
         width = car.getData().getWidth() * lngLatToXYTools.getyScaling();
 
-        gpswidth = length * car.getData().getGpswidth();
-        gpslength = width * (1 - car.getData().getGpslength());
+        gpswidth = width * car.getData().getGpswidth();
+        gpslength = length * (1 - car.getData().getGpslength());
         Log.e("车大小:", length + "---" + width);
         Log.e("gps车大小:", gpswidth + "---" + gpslength);
         invalidate();
@@ -87,6 +87,7 @@ public class MyViewCar extends View {
 
         this.xyPojo = xyPojo;
         alpha = (float) angle;
+        //添加真实经纬度到集合
         Log.e("Gps经纬度", xyPojo.getX() + "---" + xyPojo.getY());
         Log.e("Gps坐标", (float) (double) xyPojo.getX() + "---" + (float) (double) xyPojo.getY());
         Log.e("车左上", (int) (xyPojo.getX() - gpslength) + "---" + (int) (xyPojo.getY() - gpswidth));
@@ -160,8 +161,8 @@ public class MyViewCar extends View {
         int heightPoint = bitmapPoint.getHeight() / 2;
 
         // 计算缩放比例
-        scaleWidth = ((float) this.width) / width;
-        scaleHeight = ((float) this.length) / height;
+        scaleWidth = ((float) this.length) / width;
+        scaleHeight = ((float) this.width) / height;
         //设置铺满画定位圆点
         if (xyPojo != null) {
             canvas.save();
@@ -322,10 +323,4 @@ public class MyViewCar extends View {
         return new XyPojo((lng - xMargin), (lat + yMargin));
     }
 
-    /**
-     * 向后台传递路线数据
-     */
-    public void transferData() {
-        Log.e("向后台传递的路线数据：",xyPojoXY.toString());
-    }
 }

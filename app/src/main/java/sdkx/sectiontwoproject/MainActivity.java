@@ -47,6 +47,7 @@ public class MainActivity extends BaseActivity {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
         Log.e("SERIALNUMBER",SERIALNUMBER);
+        MyApplication.getInstance().addActivity(this);
     }
 
     @OnClick({R.id.exit_linear, R.id.pre_tv})
@@ -73,7 +74,7 @@ public class MainActivity extends BaseActivity {
         Intent intent=new Intent(this, PerInfActivity.class);
         intent.putExtra("perin",object);
         startActivity(intent);
-        finish();
+        MyApplication.getInstance().exit();
 
     }
 }

@@ -319,7 +319,7 @@ public class /**/CrossBoundary {
                             α = angle + 180 + vertex;
                             α = getα(α);
                         }
-            newPoint = calLocationByDistanceAndLocationAndDirection(α, gps.getLng(), gps.getLat(), distance / 100);
+            newPoint = calLocationByDistanceAndLocationAndDirection(α, gps.getLng(), gps.getLat(), distance );
             result.add(newPoint);
         }
 

@@ -115,7 +115,7 @@ public class NoHttpRx implements IModelBiz {
 //                .addParameter("pageSize",10)
 //                .addParameter(mapParameter)
 //                .setOnDialogGetListener(onDialogGetListener)请求加载框
-                .setSign(this)
+                .setSign(flag)
                 .setRetryCount(5)//重试次数
                 .setAnUnknownErrorHint("POST未知错误提示")
                 .builder(String.class, new OnIsRequestListener<String>() {
@@ -127,7 +127,7 @@ public class NoHttpRx implements IModelBiz {
                                 iView.fail(flag, new Throwable("亲！取得数据为空"));
                             } else if (jsonObject.getBoolean("success")&&jsonObject.getString("data")!=null) {
                                 iView.toActivityData(flag, s);
-
+                                RxNoHttpUtils.cancel(flag);
                             } else {
                                 iView.fail(flag, new Throwable(s));
                             }
@@ -157,7 +157,7 @@ public class NoHttpRx implements IModelBiz {
 //                .addParameter("pageSize",10)
 //                .addParameter(mapParameter)
 //                .setOnDialogGetListener(onDialogGetListener)请求加载框
-                .setSign(this)
+                .setSign(flag)
                 .setRetryCount(5)//重试次数
                 .setAnUnknownErrorHint("POST未知错误提示")
                 //设置请求bodyEntity为StringEntity，并传请求类型。
@@ -181,7 +181,7 @@ public class NoHttpRx implements IModelBiz {
                                 iView.fail(flag, new Throwable("亲！取得数据为空"));
                             } else if (jsonObject.getBoolean("success")&&jsonObject.getString("data")!=null) {
                                 iView.toActivityData(flag, s);
-
+                                RxNoHttpUtils.cancel(flag);
                             } else {
                                 iView.fail(flag, new Throwable(s));
                             }

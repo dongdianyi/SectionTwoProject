@@ -5,14 +5,10 @@
     style="@style/out_style"
     tools:context=".StartActivity">
 
-    <include
-        style="@style/top_style"
-        layout="@layout/title_view" />
-
     <LinearLayout
+        android:id="@+id/linear"
         style="@style/LinearLayout"
         android:layout_marginLeft="@dimen/dp_250"
-        android:id="@+id/linear"
         android:background="@mipmap/start_bg"
         android:orientation="horizontal">
 
@@ -31,12 +27,11 @@
                     android:src="@mipmap/equipment_point" />
 
                 <TextView
-                    android:text="设备点"
-                    style="@style/left_text_style" />
+                    style="@style/left_text_style"
+                    android:text="设备点" />
             </LinearLayout>
 
-            <LinearLayout
-                style="@style/left_style">
+            <LinearLayout style="@style/left_style">
 
                 <ImageView
                     android:layout_width="@dimen/dp_20"
@@ -44,12 +39,11 @@
                     android:src="@mipmap/unqualified_point" />
 
                 <TextView
-                    android:text="不合格点"
-                    style="@style/left_text_style" />
+                    style="@style/left_text_style"
+                    android:text="不合格点" />
             </LinearLayout>
 
-            <LinearLayout
-                style="@style/left_style">
+            <LinearLayout style="@style/left_style">
 
                 <ImageView
                     android:layout_width="@dimen/dp_20"
@@ -57,12 +51,11 @@
                     android:src="@mipmap/mast_point" />
 
                 <TextView
-                    android:text="柱杆"
-                    style="@style/left_text_style" />
+                    style="@style/left_text_style"
+                    android:text="柱杆" />
             </LinearLayout>
 
-            <LinearLayout
-                style="@style/left_style">
+            <LinearLayout style="@style/left_style">
 
                 <ImageView
                     android:layout_width="@dimen/dp_20"
@@ -70,12 +63,11 @@
                     android:src="@mipmap/in_line" />
 
                 <TextView
-                    android:text="进线"
-                    style="@style/left_text_style"/>
+                    style="@style/left_text_style"
+                    android:text="进线" />
             </LinearLayout>
 
-            <LinearLayout
-                style="@style/left_style">
+            <LinearLayout style="@style/left_style">
 
                 <ImageView
                     android:layout_width="@dimen/dp_20"
@@ -83,12 +75,11 @@
                     android:src="@mipmap/out_line" />
 
                 <TextView
-                    android:text="出线"
-                    style="@style/left_text_style" />
+                    style="@style/left_text_style"
+                    android:text="出线" />
             </LinearLayout>
 
-            <LinearLayout
-                style="@style/left_style">
+            <LinearLayout style="@style/left_style">
 
                 <ImageView
                     android:layout_width="@dimen/dp_20"
@@ -96,8 +87,8 @@
                     android:src="@mipmap/blue_line" />
 
                 <TextView
-                    android:text="考试区域线"
-                    style="@style/left_text_style" />
+                    style="@style/left_text_style"
+                    android:text="考试区域线" />
             </LinearLayout>
         </LinearLayout>
 
@@ -113,9 +104,25 @@
             <sdkx.sectiontwoproject.myview.MyViewCar
                 android:id="@+id/myview_car"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
         </RelativeLayout>
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="结束考试"
+        android:id="@+id/exit"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/dp_20"
+        android:padding="@dimen/dp_20"
+        android:textColor="@color/title_color"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold" />
+
+    <include
+        style="@style/top_style"
+        layout="@layout/title_view" />
 
     <include layout="@layout/bottom_view" />
 </RelativeLayout>

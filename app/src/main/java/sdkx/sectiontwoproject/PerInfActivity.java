@@ -58,6 +58,8 @@ public class PerInfActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        MyApplication.getInstance().addActivity(this);
+
         Intent intent = getIntent();
         perInStr = intent.getStringExtra("perin");
         Gson gson = new Gson();
@@ -99,7 +101,7 @@ public class PerInfActivity extends BaseActivity {
     public void onViewClicked() {
         //跳转开始考试界面
         startActivity(new Intent(this, StartActivity.class));
-        finish();
+        MyApplication.getInstance().exit();
     }
 
     /**

@@ -18,7 +18,8 @@ public interface HttpUrl {
     //获取考生信息
     String PREPAREEXAM_URL="/android/v1/exam/prepareExam";
 
-
+    //完成考试提交数据
+    String SETDATA_URL="/test/v1/coursepro/androidSetData";
 
 
     String ANDROIDID="12345678";
