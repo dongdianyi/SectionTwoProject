@@ -124,6 +124,9 @@ public class PerIn {
         }
 
         public String getPhoto() {
+            if (photo==null) {
+                return "";
+            }
             return photo;
         }
 

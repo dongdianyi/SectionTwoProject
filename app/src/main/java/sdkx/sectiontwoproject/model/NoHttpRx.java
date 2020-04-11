@@ -116,6 +116,10 @@ public class NoHttpRx implements IModelBiz {
 //                .addParameter(mapParameter)
 //                .setOnDialogGetListener(onDialogGetListener)请求加载框
                 .setSign(flag)
+                //单个请求设置读取时间(单位秒，默认以全局读取超时时间。)
+                 .setReadTimeout(15)
+                //单个请求设置链接超时时间(单位秒，默认以全局链接超时时间。)
+                 .setConnectTimeout(10)
                 .setRetryCount(5)//重试次数
                 .setAnUnknownErrorHint("POST未知错误提示")
                 .builder(String.class, new OnIsRequestListener<String>() {
@@ -125,7 +129,7 @@ public class NoHttpRx implements IModelBiz {
                             JSONObject jsonObject = new JSONObject(s);
                             if (TextUtils.isEmpty(s) || s.equals("") || s.trim().equals("")) {
                                 iView.fail(flag, new Throwable("亲！取得数据为空"));
-                            } else if (jsonObject.getBoolean("success")&&jsonObject.getString("data")!=null) {
+                            } else if (jsonObject.getBoolean("success")) {
                                 iView.toActivityData(flag, s);
                                 RxNoHttpUtils.cancel(flag);
                             } else {
@@ -158,6 +162,10 @@ public class NoHttpRx implements IModelBiz {
 //                .addParameter(mapParameter)
 //                .setOnDialogGetListener(onDialogGetListener)请求加载框
                 .setSign(flag)
+                //单个请求设置读取时间(单位秒，默认以全局读取超时时间。)
+                 .setReadTimeout(15)
+                //单个请求设置链接超时时间(单位秒，默认以全局链接超时时间。)
+                 .setConnectTimeout(10)
                 .setRetryCount(5)//重试次数
                 .setAnUnknownErrorHint("POST未知错误提示")
                 //设置请求bodyEntity为StringEntity，并传请求类型。
@@ -179,7 +187,7 @@ public class NoHttpRx implements IModelBiz {
                             JSONObject jsonObject = new JSONObject(s);
                             if (TextUtils.isEmpty(s) || s.equals("") || s.trim().equals("")) {
                                 iView.fail(flag, new Throwable("亲！取得数据为空"));
-                            } else if (jsonObject.getBoolean("success")&&jsonObject.getString("data")!=null) {
+                            } else if (jsonObject.getBoolean("success")) {
                                 iView.toActivityData(flag, s);
                                 RxNoHttpUtils.cancel(flag);
                             } else {

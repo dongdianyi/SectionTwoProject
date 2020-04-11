@@ -50,6 +50,7 @@ import sdkx.sectiontwoproject.app.MyApplication;
 import sdkx.sectiontwoproject.base.BaseActivity;
 import sdkx.sectiontwoproject.bean.Car;
 import sdkx.sectiontwoproject.bean.Filed;
+import sdkx.sectiontwoproject.bean.PerIn;
 import sdkx.sectiontwoproject.http.HttpUrl;
 import sdkx.sectiontwoproject.model.NoHttpRx;
 import sdkx.sectiontwoproject.myview.MyView;
@@ -180,6 +181,9 @@ public class StartActivity extends BaseActivity<String> {
         if (flag.equals("车")) {
             try {
                 Car car = gson.fromJson(object, Car.class);
+                if (car.getData()==null) {
+                    return;
+                }
                 myviewCar.getCar(car, lngLatToXYTools);
                 //录入车辆场地信息
                 crossBoundary.setMessage(JSON.toJSONString(filed.getData()), JSON.toJSONString(car.getData().getCarPoints()), "");

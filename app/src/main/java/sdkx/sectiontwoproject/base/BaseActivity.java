@@ -53,11 +53,12 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        hideTopUIMenu();
+        hideBottomUIMenu();
         super.onCreate(savedInstanceState);
 
 
-        hideTopUIMenu();
-        hideBottomUIMenu();
+
 //        //横屏设置
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //        //竖屏设置
