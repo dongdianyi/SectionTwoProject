@@ -194,10 +194,7 @@ public class StartActivity extends BaseActivity<String> {
 
         }
         if (flag.equals("提交数据")) {
-            if (!isShow) {
                 showDialog(StartActivity.this, false, info);
-                isShow = true;
-            }
         }
 
     }
@@ -277,6 +274,7 @@ public class StartActivity extends BaseActivity<String> {
                                         if (crossBoundary.isCross(locationStr1) && !isShow) {
                                             //true越出边界
                                             gradeArr[1] = 0;
+                                            isShow=true;
                                             submit(getResources().getString(R.string.cross));
                                         }
                                         Boolean msgboo = pathInOrderPro.detectionPath(lng, lat);
@@ -284,6 +282,7 @@ public class StartActivity extends BaseActivity<String> {
                                             if (msgboo == false && !isShow) {
                                                 //false未按规定路线行驶
                                                 gradeArr[0] = 0;
+                                                isShow = true;
                                                 submit(getResources().getString(R.string.no_regulations));
                                             }
                                         }
@@ -368,6 +367,7 @@ public class StartActivity extends BaseActivity<String> {
                                         if (fireStr1.contains("AA441204") && !isShow) {
                                             //熄火
                                             gradeArr[3] = 0;
+                                            isShow = true;
                                             submit(getResources().getString(R.string.fire));
                                         }
                                     }
@@ -476,6 +476,9 @@ public class StartActivity extends BaseActivity<String> {
 
     @OnClick({R.id.exit})
     public void onViewClicked() {
-        submit(getResources().getString(R.string.success));
+        if (!isShow) {
+            isShow = true;
+            submit(getResources().getString(R.string.success));
+        }
     }
 }

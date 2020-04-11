@@ -228,7 +228,7 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
     @Override
     public void fail(String flag, Throwable t) {
         Log.e("请求数据失败：", flag + t.getMessage());
-        showToast(t.getMessage());
+//        showToast(t.getMessage());
     }
 
 
