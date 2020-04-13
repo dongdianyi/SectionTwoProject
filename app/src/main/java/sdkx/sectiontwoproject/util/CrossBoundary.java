@@ -16,6 +16,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+
+import sdkx.sectiontwoproject.bean.Car;
+import sdkx.sectiontwoproject.bean.Filed;
 
 /**
  * 越界监测
@@ -52,11 +56,11 @@ public class /**/CrossBoundary {
      */
     public boolean isCross(String data) {
         // 如果有正在考试的考生
-        try {// 接收完一整条数据
-            Thread.sleep(100);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        }
+//        try {// 接收完一整条数据
+//            Thread.sleep(100);
+//        } catch (InterruptedException e1) {
+//            e1.printStackTrace();
+//        }
         // 判断是否有考生考试?
 //		if (this.examineeId != null && !"".equals(this.examineeId)) {
         if (!checkData(data)) {// 判断串口传的数据是否正确
@@ -65,6 +69,9 @@ public class /**/CrossBoundary {
         }
         //返回解析后的数据
         Map<String, String> analysis = analysis(data);
+        if (analysis == null) {
+            return false;//校验不正确或者数据不正确返回null
+        }
         // 插入数据库 TODO 存到个list?
         Point gps = new Point(Double.valueOf(analysis.get("lng")), Double.valueOf(analysis.get("lat")));
         double angle = Double.valueOf(analysis.get("velocityAngle"));// 速度角
@@ -88,6 +95,9 @@ public class /**/CrossBoundary {
      */
     public Map<String, String> analysis(String data) {
         String[] split = data.split(",");
+        if (split.length < 6) {
+            return null;
+        }
         Map<String, String> result = new HashMap<String, String>();
         result.put("lng", split[2]);
         result.put("lat", split[3]);
@@ -158,30 +168,88 @@ public class /**/CrossBoundary {
      * @param
      * @return true: 合格数据. false: 不合格数据
      */
+//    public boolean checkData(String data) {
+//        // 异或校验值
+//        if (data.length() <= 3) {
+//            return false;
+//        }
+//        String checkValue = data.substring(data.length() - 3, data.length()).replace("*", "");
+//        // 截出进行异或校验的数据内容, 并转成16进制
+//        String hex = strToHex(data.substring(1, data.length() - 3));
+//        long totle = 0;
+//        // 取到首位十六进制 0x**
+//        totle = Long.parseLong(hex.substring(0, 2), 16);
+//        long xor = 0;
+//        for (int i = 2; i < hex.length(); i += 2) {
+//            // 进行异或 0x** ^ 0x**
+//            xor = Long.parseLong(hex.substring(i, i + 2), 16);
+//            totle = totle ^ xor;
+//        }
+//        // 和发送的结果比较
+//        String totleStr = Long.toHexString(totle);
+//        if (totleStr.length() == 1) {
+//            totleStr = "0" + totleStr;
+//        }
+//        Log.e("输出数据：", checkValue + "\n" + totleStr);
+//        return totleStr.equalsIgnoreCase(checkValue);
+//    }
     public boolean checkData(String data) {
-        // 异或校验值
-        if (data.length()<=3) {
+        try {
+            data = data.replaceAll("\r", "").replaceAll("\n", "");
+            // 异或校验值
+            String checkValue = data.substring(data.length() - 3, data.length()).replace("*", "");
+            // 截出进行异或校验的数据内容, 并转成16进制
+            String hex = strToHex(data.substring(1, data.length() - 3));
+            long totle = 0;
+            // 取到首位十六进制 0x**
+            totle = Long.parseLong(hex.substring(0, 2), 16);
+            long xor = 0;
+            for (int i = 2; i < hex.length(); i += 2) {
+                // 进行异或 0x** ^ 0x**
+                xor = Long.parseLong(hex.substring(i, i + 2), 16);
+                totle = totle ^ xor;
+            }
+            // 和发送的结果比较
+            int parseInt = Integer.parseInt(checkValue, 16);
+            return parseInt == totle;
+        } catch (StringIndexOutOfBoundsException e) {
+            return false;
+        } catch (NumberFormatException e) {
             return false;
         }
-        String checkValue = data.substring(data.length() - 3, data.length()).replace("*", "");
-        // 截出进行异或校验的数据内容, 并转成16进制
-        String hex = strToHex(data.substring(1, data.length() - 3));
-        long totle = 0;
-        // 取到首位十六进制 0x**
-        totle = Long.parseLong(hex.substring(0, 2), 16);
-        long xor = 0;
-        for (int i = 2; i < hex.length(); i += 2) {
-            // 进行异或 0x** ^ 0x**
-            xor = Long.parseLong(hex.substring(i, i + 2), 16);
-            totle = totle ^ xor;
+    }
+
+    public boolean checkDataStr(String data) {
+
+        try {
+            // 异或校验值
+            if (data.length() <= 3) {
+                return false;
+            }
+            String checkValue = data.substring(data.length() - 2, data.length());
+            // 截出进行异或校验的数据内容, 并转成16进制
+            String hex = data.substring(0, data.length() - 2);
+            long totle = 0;
+            // 取到首位十六进制 0x**
+            totle = Long.parseLong(hex.substring(0, 2), 16);
+            long xor = 0;
+            for (int i = 2; i < hex.length(); i += 2) {
+                // 进行异或 0x** ^ 0x**
+                xor = Long.parseLong(hex.substring(i, i + 2), 16);
+                totle = totle ^ xor;
+            }
+            // 和发送的结果比较
+            String totleStr = Long.toHexString(totle);
+            if (totleStr.length() == 1) {
+                totleStr = "0" + totleStr;
+            }
+            Log.e("输出数据：", checkValue + "\n" + totleStr);
+            return totleStr.equalsIgnoreCase(checkValue);
+        } catch (StringIndexOutOfBoundsException e) {
+            return false;
+        } catch (NumberFormatException e) {
+            return false;
         }
-		// 和发送的结果比较
-		String totleStr=Long.toHexString(totle);
-		if (totleStr.length()==1) {
-			totleStr="0"+totleStr;
-		}
-		Log.e("输出数据：",checkValue+"\n"+totleStr);
-        return totleStr.equalsIgnoreCase(checkValue);
     }
 
     /**
@@ -251,7 +319,7 @@ public class /**/CrossBoundary {
                             α = angle + 180 + vertex;
                             α = getα(α);
                         }
-            newPoint = calLocationByDistanceAndLocationAndDirection(α, gps.getLng(), gps.getLat(), distance / 100);
+            newPoint = calLocationByDistanceAndLocationAndDirection(α, gps.getLng(), gps.getLat(), distance );
             result.add(newPoint);
         }
 
@@ -356,10 +424,34 @@ public class /**/CrossBoundary {
      * @param examineeId : 考生id
      */
     public void setMessage(String placeStr, String carStr, String examineeId) {
-        this.place = JSONArray.parseArray(placeStr, Point.class);
-        this.car = JSONArray.parseArray(carStr, Point.class);
-        this.examineeId = examineeId;
+        Log.e("setMessage数据：", "placestr" + placeStr + "carStr" + carStr + "examineeId" + examineeId);
+        try {
+            this.place = JSONArray.parseArray(placeStr, Point.class);
+            this.car = JSONArray.parseArray(carStr, Point.class);
+            this.examineeId = examineeId;
+        } catch (JSONException e) {
+            Log.e("setMessage解析异常", e.getMessage());
+        }
     }
+
+    /**
+     * 运行前录入信息
+     *
+     * @param placeStr   : 场地的字符串
+     * @param carStr     : 车辆的字符串
+     * @param examineeId : 考生id
+     */
+//    public void setMessage(List<Point> placeStr, List<Point> carStr, String examineeId) {
+//        Log.e("setMessage数据：", "placestr" + placeStr.toString() + "carStr" + carStr.toString() + "examineeId" + examineeId);
+//        try {
+//            this.place = placeStr;
+//            this.car = carStr;
+//            this.examineeId = examineeId;
+//        } catch (JSONException e) {
+//            Log.e("setMessage解析异常", e.getMessage());
+//        }
+//    }
+
 
     /**
      * 录入场地

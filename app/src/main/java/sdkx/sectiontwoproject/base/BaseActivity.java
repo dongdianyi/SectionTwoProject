@@ -2,16 +2,20 @@ package sdkx.sectiontwoproject.base;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.StatusBarManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,14 +30,19 @@ import com.kongqw.serialportlibrary.listener.OnOpenSerialPortListener;
 import com.kongqw.serialportlibrary.listener.OnSerialPortDataListener;
 import com.liqi.nohttputils.interfa.OnIsRequestListener;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import butterknife.ButterKnife;
+import sdkx.sectiontwoproject.DiaLogActivity;
 import sdkx.sectiontwoproject.MainActivity;
 import sdkx.sectiontwoproject.R;
 import sdkx.sectiontwoproject.app.MyApplication;
+import sdkx.sectiontwoproject.util.CloseBarUtil;
 import sdkx.sectiontwoproject.util.CrossBoundary;
 import sdkx.sectiontwoproject.view.IView;
 import sdkxsoft.com.pojo.XyPojo;
@@ -41,14 +50,15 @@ import sdkxsoft.com.pojo.XyPojo;
 
 public abstract class BaseActivity<T> extends AppCompatActivity implements IView, OnOpenSerialPortListener {
 
-    public SerialPortManager mSerialPortManager;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         hideTopUIMenu();
         hideBottomUIMenu();
+        super.onCreate(savedInstanceState);
+
+
+
 //        //横屏设置
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //        //竖屏设置
@@ -122,78 +132,92 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
     public void setListener() {
     }
 
+//    /**
+//     * @param activity 当前Activity
+//     * @param isShow   是否显示关闭图标
+//     * @param context  中间显示的文本内容
+//     */
+//    public  void showDialog(Activity activity, boolean isShow, String context) {
+//        View rootView = View.inflate(this, R.layout.popwindow_view, null);
+//        TextView preTv = rootView.findViewById(R.id.pre_tv);
+//        TextView contentTv = rootView.findViewById(R.id.content_tv);
+//        ImageView closeIv = rootView.findViewById(R.id.close_iv);
+//        contentTv.setText(context);
+//        if (isShow) {
+//            closeIv.setVisibility(View.VISIBLE);
+//        } else {
+//            closeIv.setVisibility(View.GONE);
+//        }
+////        PopupWindow dialog=new PopupWindow(rootView);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setView(rootView);
+//        final AlertDialog dialog = builder.create();
+//        dialog.getWindow().setBackgroundDrawableResource(R.mipmap.popwindow_bg);
+//        dialog.setCanceledOnTouchOutside(false);
+//        dialog.setCancelable(false);
+//        dialog.show();
+//        preTv.setFocusable(true);
+//        preTv.getBackground().setAlpha(120);
+//        preTv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (isShow) {
+//                    dialog.dismiss();
+//                    finish();
+//                    System.exit(0);
+//                } else {
+//                    dialog.dismiss();
+//                    startActivity(new Intent(activity, MainActivity.class));
+//                    MyApplication.getInstance().exit();
+//                }
+//            }
+//        });
+//        closeIv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dialog.dismiss();
+//            }
+//        });
+//        //隐藏虚拟键
+//        dialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+//        dialog.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+//            @Override
+//            public void onSystemUiVisibilityChange(int visibility) {
+//
+//                int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+//                        //布局位于状态栏下方
+//                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+//                        //隐藏导航栏
+//                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+//                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE;
+//                if (Build.VERSION.SDK_INT >= 19) {
+//                    uiOptions |= 0x00001000;
+//                } else {
+//                    uiOptions |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
+//                }
+//                dialog.getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+//            }
+//        });
+//
+//
+//        WindowManager.LayoutParams params =
+//                dialog.getWindow().getAttributes();
+//        params.dimAmount = 0.9f;
+//        params.width = MyApplication.getInstance().getWidth() / 2;
+//        params.height = MyApplication.getInstance().getHeight() / 3;
+//        dialog.getWindow().setAttributes(params);
+//    }
     /**
      * @param activity 当前Activity
      * @param isShow   是否显示关闭图标
      * @param context  中间显示的文本内容
      */
-    public void showDialog(Activity activity, boolean isShow, String context) {
-        View rootView = View.inflate(this, R.layout.popwindow_view, null);
-        TextView preTv = rootView.findViewById(R.id.pre_tv);
-        TextView contentTv = rootView.findViewById(R.id.content_tv);
-        ImageView closeIv = rootView.findViewById(R.id.close_iv);
-        contentTv.setText(context);
-        if (isShow) {
-            closeIv.setVisibility(View.VISIBLE);
-        } else {
-            closeIv.setVisibility(View.GONE);
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(rootView);
-        final AlertDialog dialog = builder.create();
-        dialog.getWindow().setBackgroundDrawableResource(R.mipmap.popwindow_bg);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
+    public  void showDialog(Activity activity, boolean isShow, String context) {
+        Intent intent=new Intent(activity,DiaLogActivity.class);
+        intent.putExtra("isShow",isShow);
+        intent.putExtra("context",context);
+        startActivity(intent);
 
-        dialog.show();
-        preTv.getBackground().setAlpha(120);
-        preTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isShow) {
-                    dialog.dismiss();
-                    finish();
-                    System.exit(0);
-                } else {
-                    dialog.dismiss();
-                    startActivity(new Intent(activity, MainActivity.class));
-                    finish();
-                }
-            }
-        });
-        closeIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        dialog.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-            @Override
-            public void onSystemUiVisibilityChange(int visibility) {
-                int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                        //布局位于状态栏下方
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                        //隐藏导航栏
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-                if (Build.VERSION.SDK_INT >= 19) {
-                    uiOptions |= 0x00001000;
-                } else {
-                    uiOptions |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
-                }
-                dialog.getWindow().getDecorView().setSystemUiVisibility(uiOptions);
-            }
-        });
-
-
-        WindowManager.LayoutParams params =
-                dialog.getWindow().getAttributes();
-        params.dimAmount = 0.9f;
-        params.width = MyApplication.getInstance().getWidth() / 2;
-        params.height = MyApplication.getInstance().getHeight() / 3;
-        dialog.getWindow().setAttributes(params);
     }
 
     @Override
@@ -204,46 +228,9 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
     @Override
     public void fail(String flag, Throwable t) {
         Log.e("请求数据失败：", flag + t.getMessage());
+//        showToast(t.getMessage());
     }
 
-    @Override
-    protected void onDestroy() {
-        if (null != mSerialPortManager) {
-            mSerialPortManager.closeSerialPort();
-            mSerialPortManager = null;
-        }
-        super.onDestroy();
-    }
-
-    /**
-     * 串口打开成功
-     *
-     * @param device 串口
-     */
-    @Override
-    public void onSuccess(File device) {
-//        Toast.makeText(getApplicationContext(), String.format("串口 [%s] 打开成功", device.getPath()), Toast.LENGTH_SHORT).show();
-        Log.e("串口打开", String.format("串口 [%s] 打开成功", device.getPath()));
-    }
-
-    /**
-     * 串口打开失败
-     *
-     * @param device 串口
-     * @param status status
-     */
-    @Override
-    public void onFail(File device, Status status) {
-        switch (status) {
-            case NO_READ_WRITE_PERMISSION:
-                showDialog(device.getPath(), "没有读写权限");
-                break;
-            case OPEN_FAIL:
-            default:
-                showDialog(device.getPath(), "串口打开失败");
-                break;
-        }
-    }
 
     /**
      * 显示提示框
@@ -271,7 +258,7 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
      *
      * @param
      */
-    public void onSend(String sendContent) {
+    public void onSend(String sendContent,SerialPortManager serialPortManager) {
         if (TextUtils.isEmpty(sendContent)) {
             Log.e("串口", "onSend: 发送内容为 null");
             return;
@@ -279,7 +266,7 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
 
         byte[] sendContentBytes = sendContent.getBytes();
 
-        boolean sendBytes = mSerialPortManager.sendBytes(sendContentBytes);
+        boolean sendBytes = serialPortManager.sendBytes(sendContentBytes);
         Log.e("串口", "onSend: sendBytes = " + sendBytes);
         showToast(sendBytes ? "发送成功" : "发送失败");
     }
@@ -299,6 +286,15 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
         mToast.show();
     }
 
+    @Override
+    public void onSuccess(File file) {
+
+    }
+
+    @Override
+    public void onFail(File file, Status status) {
+
+    }
 }
 
 

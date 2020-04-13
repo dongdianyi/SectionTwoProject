@@ -2,18 +2,25 @@ package sdkx.sectiontwoproject;
 
 
 import android.content.Intent;
-import android.os.Bundle;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.Html;
+import android.util.Base64;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import sdkx.sectiontwoproject.app.MyApplication;
 import sdkx.sectiontwoproject.base.BaseActivity;
+import sdkx.sectiontwoproject.bean.PerIn;
 
 public class PerInfActivity extends BaseActivity {
 
@@ -41,6 +48,8 @@ public class PerInfActivity extends BaseActivity {
     TextView typeTv;
     @BindView(R.id.linear)
     RelativeLayout linear;
+    private String perInStr;
+    private PerIn perIn;
 
     @Override
     public int intiLayout() {
@@ -49,8 +58,15 @@ public class PerInfActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        MyApplication.getInstance().addActivity(this);
 
-        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(MyApplication.getInstance().getWidth()-250, MyApplication.getInstance().getHeight()-250);
+        Intent intent = getIntent();
+        perInStr = intent.getStringExtra("perin");
+        Gson gson = new Gson();
+        perIn = gson.fromJson(perInStr, PerIn.class);
+
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(MyApplication.getInstance().getWidth() - 250, MyApplication.getInstance().getHeight() - 250);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
 
@@ -63,14 +79,21 @@ public class PerInfActivity extends BaseActivity {
         roomTv.getBackground().setAlpha(51);
         typeTv.getBackground().setAlpha(51);
         startTv.getBackground().setAlpha(120);
-        nameTv.setText(Html.fromHtml("<b>考生姓名: </b>张丽丽"));
-        sexTv.setText(Html.fromHtml("<b>性别: </b>女"));
-        dateTv.setText(Html.fromHtml("<b>考试日期: </b>2020-10-10"));
-        modelTv.setText(Html.fromHtml("<b>考试机型: </b>G1"));
-        idNumTv.setText(Html.fromHtml("<b>身份证号: </b>1212121212121"));
-        numTv.setText(Html.fromHtml("<b>考试次数: </b>第二次"));
-        roomTv.setText(Html.fromHtml("<b>考试考场: </b>第二考场"));
-        typeTv.setText(Html.fromHtml("<b>报考类别: </b>初次申领考试"));
+
+        Date date = new Date();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        headPortraitIv.setImageBitmap(stringToBitmap(perIn.getData().getPhoto()));
+
+        nameTv.setText(Html.fromHtml("<b>考生姓名: </b>"+perIn.getData().getName()));
+        sexTv.setText(Html.fromHtml("<b>性别: </b>"+perIn.getData().getSex()));
+        dateTv.setText(Html.fromHtml("<b>考试日期: </b>"+formatter.format(date)));
+        modelTv.setText(Html.fromHtml("<b>考试机型: </b>"+perIn.getData().getCarType()));
+        idNumTv.setText(Html.fromHtml("<b>身份证号: </b>"+perIn.getData().getIDCard()));
+        numTv.setText(Html.fromHtml("<b>考试次数: </b>"+perIn.getData().getNum()));
+        roomTv.setText(Html.fromHtml("<b>考试考场: </b>"+perIn.getData().getNum()));
+        typeTv.setText(Html.fromHtml("<b>报考类别: </b>"+perIn.getData().getServiceType()));
     }
 
 
@@ -78,7 +101,22 @@ public class PerInfActivity extends BaseActivity {
     public void onViewClicked() {
         //跳转开始考试界面
         startActivity(new Intent(this, StartActivity.class));
-        finish();
+        MyApplication.getInstance().exit();
     }
 
+    /**
+     * base64转图片
+     * @param string  base64串
+     * @return
+     */
+    public static Bitmap stringToBitmap(String string) {
+        Bitmap bitmap = null;
+        try {
+            byte[] bitmapArray = Base64.decode(string.split(",")[1], Base64.DEFAULT);
+            bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
 }
