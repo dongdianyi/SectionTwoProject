@@ -25,7 +25,7 @@
                 android:id="@+id/title"
                 style="@style/title_style"
                 android:layout_centerHorizontal="true"
-                android:text="系统提示" />
+                android:text="@string/system_hint" />
 
             <TextView
                 android:id="@+id/content_tv"
@@ -33,25 +33,25 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/title"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="40dp"
+                android:layout_marginTop="@dimen/dp_40"
+                android:layout_marginBottom="@dimen/dp_40"
                 android:textColor="@color/title_color"
                 android:textSize="@dimen/sp_16"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/pre_tv"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
+                android:layout_width="@dimen/dp_200"
+                android:layout_height="@dimen/dp_50"
                 android:layout_below="@id/content_tv"
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/exit_bg"
                 android:gravity="center"
-                android:paddingLeft="30dp"
-                android:paddingTop="5dp"
-                android:paddingRight="30dp"
-                android:paddingBottom="5dp"
-                android:text="确定"
+                android:paddingLeft="@dimen/dp_30"
+                android:paddingTop="@dimen/dp_5"
+                android:paddingRight="@dimen/dp_30"
+                android:paddingBottom="@dimen/dp_5"
+                android:text="@string/sure"
                 android:textColor="@color/title_color"
                 android:textStyle="bold" />
 

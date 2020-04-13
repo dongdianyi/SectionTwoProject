@@ -6,4 +6,5 @@
 
     <color name="title_color">#4DD3D5</color>
     <color name="transparent">#D9ffffff</color>
+    <color name="white">#ffffff</color>
 </resources>

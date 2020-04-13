@@ -1,41 +1,21 @@
 package sdkx.sectiontwoproject;
 
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.PixelFormat;
-import android.hardware.display.DisplayManager;
-import android.hardware.display.VirtualDisplay;
-import android.media.Image;
-import android.media.ImageReader;
-import android.media.projection.MediaProjection;
-import android.media.projection.MediaProjectionManager;
-import android.os.Build;
-import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonSyntaxException;
 import com.kongqw.serialportlibrary.Device;
 import com.kongqw.serialportlibrary.SerialPortFinder;
 import com.kongqw.serialportlibrary.SerialPortManager;
 import com.kongqw.serialportlibrary.listener.OnSerialPortDataListener;
 
-import org.json.JSONArray;
-
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,20 +23,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.RequiresApi;
 import butterknife.BindView;
 import butterknife.OnClick;
 import sdkx.sectiontwoproject.app.MyApplication;
 import sdkx.sectiontwoproject.base.BaseActivity;
 import sdkx.sectiontwoproject.bean.Car;
 import sdkx.sectiontwoproject.bean.Filed;
-import sdkx.sectiontwoproject.bean.PerIn;
 import sdkx.sectiontwoproject.http.HttpUrl;
 import sdkx.sectiontwoproject.model.NoHttpRx;
 import sdkx.sectiontwoproject.myview.MyView;
 import sdkx.sectiontwoproject.myview.MyViewCar;
 import sdkx.sectiontwoproject.util.CrossBoundary;
-import sdkx.sectiontwoproject.util.ShotScreenManager;
+import sdkx.sectiontwoproject.util.JWebSocketClient;
 import sdkxsoft.com.CarTrajectory;
 import sdkxsoft.com.pojo.SitePort;
 import sdkxsoft.com.pojo.XyPojo;
@@ -100,7 +78,10 @@ public class StartActivity extends BaseActivity<String> {
     private List<SitePort> lngLatData;
     //不合格数组
     private int gradeArr[];
-    private String info="";
+    private String info = "";
+
+    //webSocket监测下发信息
+    private JWebSocketClient client;
 
     @Override
     public int intiLayout() {
@@ -131,12 +112,14 @@ public class StartActivity extends BaseActivity<String> {
 //        });
 
 
+//        JWebSocketClient.initSocketClient();
+//        client = JWebSocketClient.client;
 
         mList = new ArrayList<>();
 
         noHttpRx = new NoHttpRx(this);
         map = new HashMap();
-        noHttpRx.postHttp("考场", HttpUrl.GETFIELD_URL, map, null);
+        noHttpRx.postHttpJson("考场", HttpUrl.GETFIELD_URL, JSON.toJSONString(map), null);
 
 
     }
@@ -173,7 +156,7 @@ public class StartActivity extends BaseActivity<String> {
                 myView.getPoints(xyPojos);
                 map.clear();
                 map.put("androidId", HttpUrl.ANDROIDID);
-                noHttpRx.postHttp("车", HttpUrl.GETCAR_URL, map, null);
+                noHttpRx.postHttpJson("车", HttpUrl.GETCAR_URL, JSON.toJSONString(map), null);
             } catch (JsonSyntaxException e) {
                 Log.e("场地解析异常：", e.getMessage());
             }
@@ -181,7 +164,7 @@ public class StartActivity extends BaseActivity<String> {
         if (flag.equals("车")) {
             try {
                 Car car = gson.fromJson(object, Car.class);
-                if (car.getData()==null) {
+                if (car.getData() == null) {
                     return;
                 }
                 myviewCar.getCar(car, lngLatToXYTools);
@@ -194,7 +177,7 @@ public class StartActivity extends BaseActivity<String> {
 
         }
         if (flag.equals("提交数据")) {
-                showDialog(StartActivity.this, false, info);
+            showDialog(StartActivity.this, false, info);
         }
 
     }
@@ -274,7 +257,7 @@ public class StartActivity extends BaseActivity<String> {
                                         if (crossBoundary.isCross(locationStr1) && !isShow) {
                                             //true越出边界
                                             gradeArr[1] = 0;
-                                            isShow=true;
+                                            isShow = true;
                                             submit(getResources().getString(R.string.cross));
                                         }
                                         Boolean msgboo = pathInOrderPro.detectionPath(lng, lat);
@@ -398,6 +381,7 @@ public class StartActivity extends BaseActivity<String> {
 
     @Override
     protected void onDestroy() {
+        //关闭串口
         if (null != mSerialPortManager) {
             mSerialPortManager.closeSerialPort();
             mSerialPortManager = null;
@@ -406,6 +390,8 @@ public class StartActivity extends BaseActivity<String> {
             mSerialPortManager2.closeSerialPort();
             mSerialPortManager2 = null;
         }
+        //关闭webSocket连接
+//        JWebSocketClient.closeConnect();
         super.onDestroy();
     }
 

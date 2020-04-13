@@ -57,7 +57,7 @@ public class MainActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.exit_linear:
                 //退出程序
-                showDialog(this, true, "确定退出系统吗？");
+                showDialog(this, true, getString(R.string.sure_exit));
                 break;
             case R.id.pre_tv:
                 //跳转个人信息界面

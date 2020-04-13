@@ -24,6 +24,8 @@ public interface HttpUrl {
 
     String ANDROIDID="12345678";
 
+    String WEBSOCKET_URL="ws://192.168.2.109:8888/test/v1/websocket/";
+
     //设备唯一标识
     String SERIALNUMBER = android.os.Build.SERIAL;
 

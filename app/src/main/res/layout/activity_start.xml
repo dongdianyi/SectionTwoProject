@@ -28,7 +28,7 @@
 
                 <TextView
                     style="@style/left_text_style"
-                    android:text="设备点" />
+                    android:text="@string/equipment_point" />
             </LinearLayout>
 
             <LinearLayout style="@style/left_style">
@@ -40,7 +40,7 @@
 
                 <TextView
                     style="@style/left_text_style"
-                    android:text="不合格点" />
+                    android:text="@string/unqualified_point" />
             </LinearLayout>
 
             <LinearLayout style="@style/left_style">
@@ -52,7 +52,7 @@
 
                 <TextView
                     style="@style/left_text_style"
-                    android:text="柱杆" />
+                    android:text="@string/mast_point" />
             </LinearLayout>
 
             <LinearLayout style="@style/left_style">
@@ -64,7 +64,7 @@
 
                 <TextView
                     style="@style/left_text_style"
-                    android:text="进线" />
+                    android:text="@string/in_line" />
             </LinearLayout>
 
             <LinearLayout style="@style/left_style">
@@ -76,7 +76,7 @@
 
                 <TextView
                     style="@style/left_text_style"
-                    android:text="出线" />
+                    android:text="@string/out_line" />
             </LinearLayout>
 
             <LinearLayout style="@style/left_style">
@@ -88,7 +88,7 @@
 
                 <TextView
                     style="@style/left_text_style"
-                    android:text="考试区域线" />
+                    android:text="@string/blue_line" />
             </LinearLayout>
         </LinearLayout>
 
@@ -111,7 +111,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="结束考试"
+        android:text="@string/end"
         android:id="@+id/exit"
         android:layout_alignParentRight="true"
         android:layout_marginTop="@dimen/dp_20"

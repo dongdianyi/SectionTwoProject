@@ -37,7 +37,6 @@ public class DiaLogActivity extends Activity {
         setContentView(R.layout.activity_dia_log);
         ButterKnife.bind(this);
         MyApplication.getInstance().addActivity(this);
-        Intent intent=getIntent();
         isShow = getIntent().getBooleanExtra("isShow",false);
         contentTv.setText(getIntent().getStringExtra("context"));
         if (isShow) {

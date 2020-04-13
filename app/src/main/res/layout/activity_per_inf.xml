@@ -22,7 +22,7 @@
             style="@style/title_style"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/dp_40"
-            android:text="考生信息" />
+            android:text="@string/info" />
 
         <ImageView
             android:id="@+id/head_portrait_iv"
@@ -46,7 +46,7 @@
             android:gravity="center"
             android:paddingTop="@dimen/dp_10"
             android:paddingBottom="@dimen/dp_10"
-            android:text="开始考试"
+            android:text="@string/start"
             android:textColor="@color/title_color" />
 
         <LinearLayout
