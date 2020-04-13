@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:layout_marginBottom="40dp"
-            android:text="考试准备好后，请点击下方“准备考试”按钮"
+            android:text="考生准备好后，请点击下方“准备考试”按钮"
             android:textColor="@color/title_color"
             android:textSize="@dimen/sp_16"
             android:textStyle="bold" />

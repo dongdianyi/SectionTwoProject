@@ -3,9 +3,7 @@ package sdkx.sectiontwoproject.http;
 public interface HttpUrl {
 
     //主地址
-//    String BASE_URL="http://192.168.2.107:8888";
-    //淄博测试地址
-    String BASE_URL="http://192.168.43.10:8888";
+    String BASE_URL="http://192.168.2.107:8888";
 
 
     //获取场地

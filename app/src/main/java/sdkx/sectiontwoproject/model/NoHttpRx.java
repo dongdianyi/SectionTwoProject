@@ -113,14 +113,32 @@ public class NoHttpRx implements IModelBiz {
                 .url(HttpUrl.BASE_URL + url)
 //                .addParameter("pageNum",1)
 //                .addParameter("pageSize",10)
-                .addParameter(mapParameter)
+//                .addParameter(mapParameter)
 //                .setOnDialogGetListener(onDialogGetListener)请求加载框
-                .setSign(this)
+                .setSign(flag)
+                //单个请求设置读取时间(单位秒，默认以全局读取超时时间。)
+                 .setReadTimeout(15)
+                //单个请求设置链接超时时间(单位秒，默认以全局链接超时时间。)
+                 .setConnectTimeout(10)
+                .setRetryCount(5)//重试次数
                 .setAnUnknownErrorHint("POST未知错误提示")
                 .builder(String.class, new OnIsRequestListener<String>() {
                     @Override
                     public void onNext(String s) {
-                        iView.toActivityData(flag, s);
+                        try {
+                            JSONObject jsonObject = new JSONObject(s);
+                            if (TextUtils.isEmpty(s) || s.equals("") || s.trim().equals("")) {
+                                iView.fail(flag, new Throwable("亲！取得数据为空"));
+                            } else if (jsonObject.getBoolean("success")) {
+                                iView.toActivityData(flag, s);
+                                RxNoHttpUtils.cancel(flag);
+                            } else {
+                                iView.fail(flag, new Throwable(s));
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
@@ -129,6 +147,65 @@ public class NoHttpRx implements IModelBiz {
 
                     }
                 })
+
+                .requestRxNoHttp();
+    }
+
+    //post请求
+    @Override
+    public void postHttpJson(String flag, String url, String parameter, OnDialogGetListener onDialogGetListener) {
+        RxNoHttpUtils.rxNohttpRequest()
+                .post()
+                .url(HttpUrl.BASE_URL + url)
+//                .addParameter("pageNum",1)
+//                .addParameter("pageSize",10)
+//                .addParameter(mapParameter)
+//                .setOnDialogGetListener(onDialogGetListener)请求加载框
+                .setSign(flag)
+                //单个请求设置读取时间(单位秒，默认以全局读取超时时间。)
+                 .setReadTimeout(15)
+                //单个请求设置链接超时时间(单位秒，默认以全局链接超时时间。)
+                 .setConnectTimeout(10)
+                .setRetryCount(5)//重试次数
+                .setAnUnknownErrorHint("POST未知错误提示")
+                //设置请求bodyEntity为StringEntity，并传请求类型。
+                .requestStringEntity("application/json")
+                //为StringEntity添加body中String值
+                .addStringEntityParameter(parameter)
+                //从bodyEntity切换到请求配置对象
+                 .transitionToRequest()
+                //设置请求bodyEntity为JsonObjectEntity.json格式：{"xx":"xxx","yy":"yyy"}
+//                 .requestJsonObjectEntity()
+                //给JsonObjectEntity添加参数和值
+//                .addEntityParameter("androidId","12345678")
+                //从bodyEntity切换到请求配置对象
+//                 .transitionToRequest()
+                .builder(String.class, new OnIsRequestListener<String>() {
+                    @Override
+                    public void onNext(String s) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(s);
+                            if (TextUtils.isEmpty(s) || s.equals("") || s.trim().equals("")) {
+                                iView.fail(flag, new Throwable("亲！取得数据为空"));
+                            } else if (jsonObject.getBoolean("success")) {
+                                iView.toActivityData(flag, s);
+                                RxNoHttpUtils.cancel(flag);
+                            } else {
+                                iView.fail(flag, new Throwable(s));
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        iView.fail(flag, throwable);
+
+                    }
+                })
+
                 .requestRxNoHttp();
     }
 }

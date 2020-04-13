@@ -85,6 +85,9 @@ public class Car {
         }
 
         public String getCarType() {
+            if (carType==null)
+                return "";
+
             return carType;
         }
 
