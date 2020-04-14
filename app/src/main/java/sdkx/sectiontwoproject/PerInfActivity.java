@@ -100,7 +100,9 @@ public class PerInfActivity extends BaseActivity {
     @OnClick(R.id.start_tv)
     public void onViewClicked() {
         //跳转开始考试界面
-        startActivity(new Intent(this, StartActivity.class));
+        Intent intent=new Intent(this,StartActivity.class);
+        intent.putExtra("id",perIn.getData().getExamineeId());
+        startActivity(intent);
         MyApplication.getInstance().exit();
     }
 

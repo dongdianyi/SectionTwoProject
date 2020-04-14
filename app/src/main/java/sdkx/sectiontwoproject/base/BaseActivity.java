@@ -2,50 +2,30 @@ package sdkx.sectiontwoproject.base;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.StatusBarManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jaeger.library.StatusBarUtil;
-import com.kongqw.serialportlibrary.Device;
-import com.kongqw.serialportlibrary.SerialPortFinder;
 import com.kongqw.serialportlibrary.SerialPortManager;
 import com.kongqw.serialportlibrary.listener.OnOpenSerialPortListener;
-import com.kongqw.serialportlibrary.listener.OnSerialPortDataListener;
-import com.liqi.nohttputils.interfa.OnIsRequestListener;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.ButterKnife;
 import sdkx.sectiontwoproject.DiaLogActivity;
-import sdkx.sectiontwoproject.MainActivity;
-import sdkx.sectiontwoproject.R;
-import sdkx.sectiontwoproject.app.MyApplication;
-import sdkx.sectiontwoproject.util.CloseBarUtil;
-import sdkx.sectiontwoproject.util.CrossBoundary;
 import sdkx.sectiontwoproject.view.IView;
-import sdkxsoft.com.pojo.XyPojo;
+
+import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
+import static sdkx.sectiontwoproject.util.UtilLog.showToast;
 
 
 public abstract class BaseActivity<T> extends AppCompatActivity implements IView, OnOpenSerialPortListener {
@@ -227,8 +207,7 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
 
     @Override
     public void fail(String flag, Throwable t) {
-        Log.e("请求数据失败：", flag + t.getMessage());
-//        showToast(t.getMessage());
+        showLogE("请求数据失败："+flag,t.getMessage());
     }
 
 
@@ -260,31 +239,17 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
      */
     public void onSend(String sendContent,SerialPortManager serialPortManager) {
         if (TextUtils.isEmpty(sendContent)) {
-            Log.e("串口", "onSend: 发送内容为 null");
+            showLogE("串口：","onSend: 发送内容为 null");
             return;
         }
 
         byte[] sendContentBytes = sendContent.getBytes();
 
         boolean sendBytes = serialPortManager.sendBytes(sendContentBytes);
-        Log.e("串口", "onSend: sendBytes = " + sendBytes);
+        showLogE("串口：","onSend: sendBytes = " + sendBytes);
         showToast(sendBytes ? "发送成功" : "发送失败");
     }
 
-    private Toast mToast;
-
-    /**
-     * Toast
-     *
-     * @param content content
-     */
-    public void showToast(String content) {
-        if (null == mToast) {
-            mToast = Toast.makeText(getApplicationContext(), null, Toast.LENGTH_SHORT);
-        }
-        mToast.setText(content);
-        mToast.show();
-    }
 
     @Override
     public void onSuccess(File file) {

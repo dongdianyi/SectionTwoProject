@@ -24,6 +24,7 @@ import sdkx.sectiontwoproject.http.HttpUrl;
 import sdkx.sectiontwoproject.model.NoHttpRx;
 
 import static sdkx.sectiontwoproject.http.HttpUrl.SERIALNUMBER;
+import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
 
 public class MainActivity extends BaseActivity {
 
@@ -48,7 +49,7 @@ public class MainActivity extends BaseActivity {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(MyApplication.getInstance().getWidth() / 2, MyApplication.getInstance().getHeight() / 3);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
-        Log.e("SERIALNUMBER",SERIALNUMBER);
+        showLogE("SERIALNUMBER",SERIALNUMBER);
         MyApplication.getInstance().addActivity(this);
     }
 

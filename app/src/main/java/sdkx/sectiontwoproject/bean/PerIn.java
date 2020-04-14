@@ -7,7 +7,6 @@ public class PerIn {
      * status : 200
      * code : 200
      * msg : 操作成功
-     * data : {"serviceType":"初次申领","carType":"K1","IDCard":"370921199808013934","sex":"男","num":5,"name":"安卓测试勿动","photo":"data:image/png;bas"}
      */
 
     private boolean success;
@@ -62,9 +61,12 @@ public class PerIn {
          * carType : K1
          * IDCard : 370921199808013934
          * sex : 男
-         * num : 5
+         * num : 1
          * name : 安卓测试勿动
-         * photo : data:image/png;bas
+         * photo : data:image/png;base64,
+         * examineeId : 1245908600819298304
+         * testDate : 2020-04-03
+         * roomName : 测试考场
          */
 
         private String serviceType;
@@ -74,6 +76,9 @@ public class PerIn {
         private int num;
         private String name;
         private String photo;
+        private String examineeId;
+        private String testDate;
+        private String roomName;
 
         public String getServiceType() {
             return serviceType;
@@ -132,6 +137,30 @@ public class PerIn {
 
         public void setPhoto(String photo) {
             this.photo = photo;
+        }
+
+        public String getExamineeId() {
+            return examineeId;
+        }
+
+        public void setExamineeId(String examineeId) {
+            this.examineeId = examineeId;
+        }
+
+        public String getTestDate() {
+            return testDate;
+        }
+
+        public void setTestDate(String testDate) {
+            this.testDate = testDate;
+        }
+
+        public String getRoomName() {
+            return roomName;
+        }
+
+        public void setRoomName(String roomName) {
+            this.roomName = roomName;
         }
     }
 }

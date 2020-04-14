@@ -13,10 +13,10 @@ import java.io.IOException;
 /**
  * 截屏管理类
  * //非视频类型截屏
- *                 ShotScreenManager.getInstance().picShotScreen(activity,filePath,70);
- *                 //视频类型截屏,截出的图片是全黑的,只能用视频指定时间,抽取出一阵图片的方式用作截屏
- *                 //time:视频啊播放的时间已经乘以了1000
- *                 ShotScreenManager.getInstance().videoShotScreen(videoPath,filePath,2,70);
+ * ShotScreenManager.getInstance().picShotScreen(activity,filePath,70);
+ * //视频类型截屏,截出的图片是全黑的,只能用视频指定时间,抽取出一阵图片的方式用作截屏
+ * //time:视频啊播放的时间已经乘以了1000
+ * ShotScreenManager.getInstance().videoShotScreen(videoPath,filePath,2,70);
  */
 public class ShotScreenManager {
     private static final String TAG = "ShotScreenManager";

@@ -80,8 +80,8 @@ public class MyApplication extends Application {
                     // .setCookieStoreListener(new DBCookieStore.CookieStoreListener())
                     //设置主机验证
                     // .setHostnameVerifier(new HostnameVerifier())
-                    //设置全局重试次数，配置后每个请求失败都会重试设置的次数。
-                    //.setRetry(5)
+//                    设置全局重试次数，配置后每个请求失败都会重试设置的次数。
+                    .setRetry(5)
                     .setAnUnknownErrorHint("全局未知错误提示语")
                     //开始初始化Nohttp
                     .startInit();
