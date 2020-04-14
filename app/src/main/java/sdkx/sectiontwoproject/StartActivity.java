@@ -52,6 +52,7 @@ import sdkxsoft.com.tools.LngLatToXYTools;
 import sdkxsoft.com.tools.PathInOrderPro;
 import sdkxsoft.com.tools.RotationAngleTools;
 
+import static sdkx.sectiontwoproject.util.UtilLog.isFastClick;
 import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
 import static sdkx.sectiontwoproject.util.UtilLog.showToast;
 
@@ -514,6 +515,9 @@ public class StartActivity extends BaseActivity<String> {
 
     @OnClick({R.id.exit})
     public void onViewClicked() {
+        if (isFastClick()) {
+            return;
+        }
         if (!isShow) {
             isShow = true;
             submit(getResources().getString(R.string.success));

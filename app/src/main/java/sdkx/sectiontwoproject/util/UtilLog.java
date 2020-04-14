@@ -30,4 +30,20 @@ public class UtilLog {
         Log.e(flag, content);
     }
 
+
+    /**
+     * 防止按钮重复点击
+     */
+    private static final int MIN_DELAY_TIME = 2000;  // 两次点击间隔不能少于1000ms
+    private static long lastClickTime;
+
+    public static boolean isFastClick() {
+        boolean flag = true;
+        long currentClickTime = System.currentTimeMillis();
+        if ((currentClickTime - lastClickTime) >= MIN_DELAY_TIME) {
+            flag = false;
+        }
+        lastClickTime = currentClickTime;
+        return flag;
+    }
 }

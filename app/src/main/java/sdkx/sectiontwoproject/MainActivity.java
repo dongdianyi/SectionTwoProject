@@ -24,6 +24,7 @@ import sdkx.sectiontwoproject.http.HttpUrl;
 import sdkx.sectiontwoproject.model.NoHttpRx;
 
 import static sdkx.sectiontwoproject.http.HttpUrl.SERIALNUMBER;
+import static sdkx.sectiontwoproject.util.UtilLog.isFastClick;
 import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
 
 public class MainActivity extends BaseActivity {
@@ -55,6 +56,9 @@ public class MainActivity extends BaseActivity {
 
     @OnClick({R.id.exit_linear, R.id.pre_tv})
     public void onViewClicked(View view) {
+        if (isFastClick()) {
+            return;
+        }
         switch (view.getId()) {
             case R.id.exit_linear:
                 //退出程序

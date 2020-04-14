@@ -22,6 +22,8 @@ import sdkx.sectiontwoproject.app.MyApplication;
 import sdkx.sectiontwoproject.base.BaseActivity;
 import sdkx.sectiontwoproject.bean.PerIn;
 
+import static sdkx.sectiontwoproject.util.UtilLog.isFastClick;
+
 public class PerInfActivity extends BaseActivity {
 
     @BindView(R.id.name_tv)
@@ -80,25 +82,29 @@ public class PerInfActivity extends BaseActivity {
         typeTv.getBackground().setAlpha(51);
         startTv.getBackground().setAlpha(120);
 
-        Date date = new Date();
+//        Date date = new Date();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+//        formatter.format(date);
 
         headPortraitIv.setImageBitmap(stringToBitmap(perIn.getData().getPhoto()));
 
         nameTv.setText(Html.fromHtml("<b>考生姓名: </b>"+perIn.getData().getName()));
         sexTv.setText(Html.fromHtml("<b>性别: </b>"+perIn.getData().getSex()));
-        dateTv.setText(Html.fromHtml("<b>考试日期: </b>"+formatter.format(date)));
+        dateTv.setText(Html.fromHtml("<b>考试日期: </b>"+perIn.getData().getTestDate()));
         modelTv.setText(Html.fromHtml("<b>考试机型: </b>"+perIn.getData().getCarType()));
         idNumTv.setText(Html.fromHtml("<b>身份证号: </b>"+perIn.getData().getIDCard()));
         numTv.setText(Html.fromHtml("<b>考试次数: </b>"+perIn.getData().getNum()));
-        roomTv.setText(Html.fromHtml("<b>考试考场: </b>"+perIn.getData().getNum()));
+        roomTv.setText(Html.fromHtml("<b>考试考场: </b>"+perIn.getData().getRoomName()));
         typeTv.setText(Html.fromHtml("<b>报考类别: </b>"+perIn.getData().getServiceType()));
     }
 
 
     @OnClick(R.id.start_tv)
     public void onViewClicked() {
+        if (isFastClick()) {
+            return;
+        }
         //跳转开始考试界面
         Intent intent=new Intent(this,StartActivity.class);
         intent.putExtra("id",perIn.getData().getExamineeId());

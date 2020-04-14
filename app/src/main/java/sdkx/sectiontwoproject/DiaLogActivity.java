@@ -19,6 +19,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import sdkx.sectiontwoproject.app.MyApplication;
 
+import static sdkx.sectiontwoproject.util.UtilLog.isFastClick;
+
 public class DiaLogActivity extends Activity {
     @BindView(R.id.dialog_relative)
     RelativeLayout dialogRelative;
@@ -55,6 +57,9 @@ public class DiaLogActivity extends Activity {
 
     @OnClick({R.id.pre_tv, R.id.close_iv})
     public void onViewClicked(View view) {
+        if (isFastClick()) {
+            return;
+        }
         switch (view.getId()) {
             case R.id.pre_tv:
                 if (isShow) {
