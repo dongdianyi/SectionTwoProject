@@ -2,8 +2,6 @@ package sdkx.sectiontwoproject;
 
 
 import android.content.Intent;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -22,9 +20,9 @@ import sdkx.sectiontwoproject.base.BaseActivity;
 import sdkx.sectiontwoproject.bean.PerIn;
 import sdkx.sectiontwoproject.http.HttpUrl;
 import sdkx.sectiontwoproject.model.NoHttpRx;
+import sdkx.sectiontwoproject.util.SingleClick;
 
-import static sdkx.sectiontwoproject.http.HttpUrl.SERIALNUMBER;
-import static sdkx.sectiontwoproject.util.UtilLog.isFastClick;
+import static sdkx.sectiontwoproject.http.HttpUrl.ANDROIDID;
 import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
 
 public class MainActivity extends BaseActivity {
@@ -50,15 +48,13 @@ public class MainActivity extends BaseActivity {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(MyApplication.getInstance().getWidth() / 2, MyApplication.getInstance().getHeight() / 3);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
-        showLogE("SERIALNUMBER",SERIALNUMBER);
+        showLogE("SERIALNUMBER",ANDROIDID);
         MyApplication.getInstance().addActivity(this);
     }
 
+    @SingleClick
     @OnClick({R.id.exit_linear, R.id.pre_tv})
     public void onViewClicked(View view) {
-        if (isFastClick()) {
-            return;
-        }
         switch (view.getId()) {
             case R.id.exit_linear:
                 //退出程序

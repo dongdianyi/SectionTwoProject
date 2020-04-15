@@ -108,7 +108,7 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <TextView
+    <!--<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/end"
@@ -118,7 +118,7 @@
         android:padding="@dimen/dp_20"
         android:textColor="@color/title_color"
         android:textSize="@dimen/sp_16"
-        android:textStyle="bold" />
+        android:textStyle="bold" />-->
 
     <include
         style="@style/top_style"

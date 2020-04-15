@@ -5,42 +5,24 @@ package sdkx.sectiontwoproject.bean;
  */
 public class ReceiveMessage {
 
-    //发送人
+
+    /**
+     * code : html
+     * data : {"state":1,"reason":"出界考试不合格"}
+     * receive : 123
+     * sendName : 1234
+     */
+
+    private String code;
+    private DataBean data;
+    private String receive;
     private String sendName;
 
-    //接收人
-    private String receive;
-
-    //信息类别码
-    private String code;
-
-    //数据
-    private DataBean data;
-
-    public ReceiveMessage() {
-    }
-
-    public ReceiveMessage(String sendName, String receive, String code, DataBean data) {
-        this.sendName = sendName;
-        this.receive = receive;
+    public ReceiveMessage(String code, DataBean data, String receive, String sendName) {
         this.code = code;
         this.data = data;
-    }
-
-    public String getSendName() {
-        return sendName;
-    }
-
-    public void setSendName(String sendName) {
-        this.sendName = sendName;
-    }
-
-    public String getReceive() {
-        return receive;
-    }
-
-    public void setReceive(String receive) {
         this.receive = receive;
+        this.sendName = sendName;
     }
 
     public String getCode() {
@@ -58,15 +40,37 @@ public class ReceiveMessage {
     public void setData(DataBean data) {
         this.data = data;
     }
+
+    public String getReceive() {
+        return receive;
+    }
+
+    public void setReceive(String receive) {
+        this.receive = receive;
+    }
+
+    public String getSendName() {
+        return sendName;
+    }
+
+    public void setSendName(String sendName) {
+        this.sendName = sendName;
+    }
+
     public static class DataBean {
-        private String state;
+        /**
+         * state : 1
+         * reason : 出界考试不合格
+         */
+
+        private int state;
         private String reason;
 
-        public String getState() {
+        public int getState() {
             return state;
         }
 
-        public void setState(String state) {
+        public void setState(int state) {
             this.state = state;
         }
 

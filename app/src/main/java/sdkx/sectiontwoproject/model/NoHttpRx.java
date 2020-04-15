@@ -131,10 +131,10 @@ public class NoHttpRx implements IModelBiz {
                                 iView.fail(flag, new Throwable("亲！取得数据为空"));
                             } else if (jsonObject.getBoolean("success")) {
                                 iView.toActivityData(flag, s);
-                                RxNoHttpUtils.cancel(flag);
                             } else {
                                 iView.fail(flag, new Throwable(s));
                             }
+                            RxNoHttpUtils.cancel(flag);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -183,13 +183,14 @@ public class NoHttpRx implements IModelBiz {
                 .builder(String.class, new OnIsRequestListener<String>() {
                     @Override
                     public void onNext(String s) {
+                        RxNoHttpUtils.cancel(flag);
+
                         try {
                             JSONObject jsonObject = new JSONObject(s);
                             if (TextUtils.isEmpty(s) || s.equals("") || s.trim().equals("")) {
                                 iView.fail(flag, new Throwable("亲！取得数据为空"));
                             } else if (jsonObject.getBoolean("success")) {
                                 iView.toActivityData(flag, s);
-                                RxNoHttpUtils.cancel(flag);
                             } else {
                                 iView.fail(flag, new Throwable(s));
                             }

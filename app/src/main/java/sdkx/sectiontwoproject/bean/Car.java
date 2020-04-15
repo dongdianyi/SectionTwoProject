@@ -67,6 +67,7 @@ public class Car {
          * carPoints : [{"number":"A1","lng":117.00008,"lat":36.00003,"side":65,"hypotenuse":0,"vertex":44.99999999999999},{"number":"A2","lng":117.00009111,"lat":36.00003,"side":0,"hypotenuse":-30,"vertex":44.99999999999999},{"number":"A3","lng":117.00008,"lat":36.00004,"side":0,"hypotenuse":-30,"vertex":44.99999999999999},{"number":"A4","lng":117.00007,"lat":36.00004,"side":-25,"hypotenuse":0,"vertex":44.99999999999999},{"number":"1","lng":117.00008,"lat":36.00005,"side":30,"hypotenuse":71.59,"vertex":24.78},{"number":"2","lng":117.00008,"lat":36.00003,"side":30,"hypotenuse":-71.59,"vertex":24.78},{"number":"3","lng":117.00009,"lat":36.00004,"side":-30,"hypotenuse":-39.05,"vertex":50.19},{"number":"4","lng":117.00008,"lat":36.00005,"side":-30,"hypotenuse":39.05,"vertex":50.19}]
          * length : 0.9
          * width : 0.6
+         *
          */
 
         private double gpswidth;
@@ -75,6 +76,7 @@ public class Car {
         private double length;
         private double width;
         private List<CarPointsBean> carPoints;
+
 
         public double getGpswidth() {
             return gpswidth;

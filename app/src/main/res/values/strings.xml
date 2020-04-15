@@ -1,24 +1,26 @@
 <resources>
     <string name="app_name">科二平板端</string>
-    <string name="title_text">场 地 驾 驶 技 能 考 试</string>
-    <string name="exit_text">退出系统</string>
+
     <string name="bottom_context">技术支持：山东科翔软件科技有限公司</string>
-    <string name="fire">您已熄火，考试结束</string>
-    <string name="cross">您已越界，考试结束</string>
+    <string name="ready">考生准备好后，请点击下方“准备考试”按钮</string>
     <string name="no_regulations">您未按规定行驶，考试结束</string>
+    <string name="title_text">场 地 驾 驶 技 能 考 试</string>
+    <string name="bumper_rod">您已撞杆，考试结束</string>
+    <string name="unqualified_point">不合格点</string>
+    <string name="sure_exit">确定退出系统吗？</string>
+    <string name="cross">您已越界，考试结束</string>
+    <string name="equipment_point">设备点</string>
+    <string name="fire">您已熄火，考试结束</string>
     <string name="success">恭喜您考试成功</string>
     <string name="system_hint">系统提示</string>
-    <string name="sure">确定</string>
-    <string name="ready">考生准备好后，请点击下方“准备考试”按钮</string>
-    <string name="ready_tv">准备考试</string>
-    <string name="info">考生信息</string>
-    <string name="start">开始考试</string>
-    <string name="equipment_point">设备点</string>
-    <string name="unqualified_point">不合格点</string>
-    <string name="mast_point">柱杆</string>
-    <string name="in_line">进线</string>
-    <string name="out_line">出线</string>
     <string name="blue_line">考试区域线</string>
+    <string name="exit_text">退出系统</string>
+    <string name="ready_tv">准备考试</string>
+    <string name="mast_point">柱杆</string>
+    <string name="start">开始考试</string>
+    <string name="out_line">出线</string>
+    <string name="info">考生信息</string>
+    <string name="in_line">进线</string>
     <string name="end">结束考试</string>
-    <string name="sure_exit">确定退出系统吗？</string>
+    <string name="sure">确定</string>
 </resources>

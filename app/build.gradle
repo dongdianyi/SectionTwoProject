@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
-
+// 注意：主App中请确保添加aspectjx
+apply plugin: 'android-aspectjx'
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -58,4 +59,8 @@ dependencies {
 
     //websocket
     implementation "org.java-websocket:Java-WebSocket:1.4.1"
+
+    //防止重复点击
+    implementation 'org.aspectj:aspectjrt:1.9.5'
+
 }

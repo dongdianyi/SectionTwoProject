@@ -11,15 +11,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.jaeger.library.StatusBarUtil;
 
-import androidx.annotation.Nullable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import sdkx.sectiontwoproject.app.MyApplication;
-
-import static sdkx.sectiontwoproject.util.UtilLog.isFastClick;
+import sdkx.sectiontwoproject.util.SingleClick;
 
 public class DiaLogActivity extends Activity {
     @BindView(R.id.dialog_relative)
@@ -54,12 +54,9 @@ public class DiaLogActivity extends Activity {
 
 
     }
-
+    @SingleClick
     @OnClick({R.id.pre_tv, R.id.close_iv})
     public void onViewClicked(View view) {
-        if (isFastClick()) {
-            return;
-        }
         switch (view.getId()) {
             case R.id.pre_tv:
                 if (isShow) {

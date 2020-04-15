@@ -45,6 +45,7 @@ import sdkx.sectiontwoproject.myview.MyView;
 import sdkx.sectiontwoproject.myview.MyViewCar;
 import sdkx.sectiontwoproject.util.CrossBoundary;
 import sdkx.sectiontwoproject.util.JWebSocketClient;
+import sdkx.sectiontwoproject.util.SingleClick;
 import sdkxsoft.com.CarTrajectory;
 import sdkxsoft.com.pojo.SitePort;
 import sdkxsoft.com.pojo.XyPojo;
@@ -52,7 +53,9 @@ import sdkxsoft.com.tools.LngLatToXYTools;
 import sdkxsoft.com.tools.PathInOrderPro;
 import sdkxsoft.com.tools.RotationAngleTools;
 
-import static sdkx.sectiontwoproject.util.UtilLog.isFastClick;
+import static sdkx.sectiontwoproject.util.CrossBoundary.ASTERNWAY;
+import static sdkx.sectiontwoproject.util.CrossBoundary.OUT_ERROR;
+import static sdkx.sectiontwoproject.util.CrossBoundary.PILE_ERROR;
 import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
 import static sdkx.sectiontwoproject.util.UtilLog.showToast;
 
@@ -102,6 +105,7 @@ public class StartActivity extends BaseActivity<String> {
     private SoundPool mSoundPool;
     private ReceiveMessage receiveMessage;
 
+    private final int whatNum = 0x0;
 
     @Override
     public int intiLayout() {
@@ -120,6 +124,7 @@ public class StartActivity extends BaseActivity<String> {
 //        Log.e("bitmap", bitmap.toString());
         crossBoundary = new CrossBoundary();
         lngLatData = new ArrayList<>();
+        // 未按规定路线行驶；越界；碰杆；熄火；考官主观判断；
         gradeArr = new int[]{1, 1, 1, 1, 1};
 //        location = new int[2];
 //        myView.getLocationOnScreen(location);
@@ -164,6 +169,7 @@ public class StartActivity extends BaseActivity<String> {
         mList = new ArrayList<>();
 
         noHttpRx = new NoHttpRx(this);
+
         map = new HashMap();
         noHttpRx.postHttpJson("考场", HttpUrl.GETFIELD_URL, JSON.toJSONString(map), null);
 
@@ -286,10 +292,7 @@ public class StartActivity extends BaseActivity<String> {
 
                                     if (crossBoundary.checkData(locationStr1)) {
                                         String[] arr = locationStr1.split(",");
-//                                    if (arr.length <= 20)
-//                                        return;
 
-//                                        try {
                                         double lng = Double.parseDouble(arr[2]);
                                         double lat = Double.parseDouble(arr[3]);
                                         double angle = Double.parseDouble(arr[5]);
@@ -301,32 +304,42 @@ public class StartActivity extends BaseActivity<String> {
 
                                         lngLatData.add(new SitePort(lng, lat, angle));
 
-//                                        if (lngLatToXYTools != null && myviewCar != null) {
                                         myviewCar.getPoint(lngLatToXYTools.getLngLatToXyPro(lng, lat), rotationAngleTools.getCarAnglePro(angle));
-//                                        }
-//                                        if (crossBoundary != null && pathInOrderPro != null) {
-                                        if (crossBoundary.isCross(locationStr1) && !isShow) {
-                                            //true越出边界
-                                            gradeArr[1] = 0;
-                                            isShow = true;
-                                            submit(getResources().getString(R.string.cross));
-                                        }
-                                        Boolean msgboo = pathInOrderPro.detectionPath(lng, lat);
-                                        if (msgboo != null) {
-                                            if (msgboo == false && !isShow) {
-                                                //false未按规定路线行驶
+                                        if (!isShow) {
+                                            if (crossBoundary.isCross(locationStr1) == OUT_ERROR) {
+                                                //越界
+                                                gradeArr[1] = 0;
+                                                isShow = true;
+                                                submit(getResources().getString(R.string.cross));
+                                                return;
+                                            }
+                                            if (crossBoundary.isCross(locationStr1) == ASTERNWAY) {
+                                                //库外倒车 未按规定路线行驶
                                                 gradeArr[0] = 0;
                                                 isShow = true;
                                                 submit(getResources().getString(R.string.no_regulations));
+                                                return;
+                                            }
+                                            if (crossBoundary.isCross(locationStr1) == PILE_ERROR) {
+                                                //碰杆
+                                                gradeArr[2] = 0;
+                                                isShow = true;
+                                                submit(getResources().getString(R.string.bumper_rod));
+                                                return;
+                                            }
+
+                                            Boolean msgboo = pathInOrderPro.detectionPath(lng, lat);
+                                            if (msgboo != null) {
+                                                if (msgboo == false) {
+                                                    //false未按规定路线行驶
+                                                    gradeArr[0] = 0;
+                                                    isShow = true;
+                                                    submit(getResources().getString(R.string.no_regulations));
+                                                    return;
+                                                }
                                             }
                                         }
-//                                        }
-//                                        } catch (NumberFormatException e) {
-//                                            Log.e("定位串口数据NumberFormat：", e.getMessage());
-//                                        } catch (NullPointerException e) {
-//                                            Log.e("定位串口数据NullPointer：", e.getMessage());
-//
-//                                        }
+
                                     }
                                 }
                             });
@@ -513,22 +526,22 @@ public class StartActivity extends BaseActivity<String> {
         noHttpRx.postHttpJson("提交数据", HttpUrl.SETDATA_URL, JSON.toJSONString(map), null);
     }
 
+   /* @SingleClick
     @OnClick({R.id.exit})
-    public void onViewClicked() {
-        if (isFastClick()) {
-            return;
-        }
+    public void onViewClicked(View view) {
         if (!isShow) {
             isShow = true;
             submit(getResources().getString(R.string.success));
         }
-    }
+    }*/
 
 
     /**
      * 断开连接
      */
     public void closeConnect() {
+        //移除心跳监测
+        mHandler.removeCallbacks(heartBeatRunnable);
         try {
             if (null != client) {
                 client.close();
@@ -537,29 +550,39 @@ public class StartActivity extends BaseActivity<String> {
             e.printStackTrace();
         } finally {
             client = null;
+
         }
     }
 
     private final long HEART_BEAT_RATE = 5 * 1000;//每隔5秒进行一次对长连接的心跳检测
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler();
+
+    private Handler mHandlerMessage = new Handler(new Handler.Callback() {
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            try {
-            receiveMessage = new Gson().fromJson(msg.obj.toString(), ReceiveMessage.class);
-            if (receiveMessage.getData().getReason()!=null) {
-                showDialog(StartActivity.this, false, receiveMessage.getData().getReason());
+        public boolean handleMessage(@NonNull Message msg) {
+            if (msg.what == whatNum) {
+                try {
+                    receiveMessage = new Gson().fromJson(msg.obj.toString(), ReceiveMessage.class);
+                    if (client != null && client.isOpen()) {
+                        client.send(JSON.toJSONString(new ReceiveMessage("reply", receiveMessage.getData(), "1212", id)));
+                    }
+                    if (receiveMessage.getData().getReason() != null && !isShow) {
+                        gradeArr[4] = 0;
+                        isShow = true;
+                        submit(receiveMessage.getData().getReason());
+                    }
+
+                } catch (JsonSyntaxException e) {
+                    showLogE("JsonSyntaxException", e.getMessage());
+                }
             }
-            if (client != null && client.isOpen()) {
-                client.send(JSON.toJSONString(new ReceiveMessage(id, "1212", "reply",receiveMessage.getData() )));
-            }
-            }catch (JsonSyntaxException e){}
+            return false;
         }
-    };
+    });
     private Runnable heartBeatRunnable = new Runnable() {
         @Override
         public void run() {
-            showLogE("JWebSocketClientService", "心跳包检测websocket连接状态");
+            showLogE("JWebSocketClientService", "心跳包检测webSocket连接状态");
             if (client != null) {
                 if (client.isClosed()) {
                     reconnectWs();
@@ -582,8 +605,9 @@ public class StartActivity extends BaseActivity<String> {
                 //message就是接收到的消息
                 showLogE("接收到的消息", message);
                 Message message1 = new Message();
+                message1.what = whatNum;
                 message1.obj = message;
-                mHandler.sendMessage(message1);
+                mHandlerMessage.sendMessage(message1);
             }
         };
         try {

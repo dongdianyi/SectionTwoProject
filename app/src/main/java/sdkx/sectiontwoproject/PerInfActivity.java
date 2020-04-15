@@ -6,23 +6,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.Html;
 import android.util.Base64;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 import sdkx.sectiontwoproject.app.MyApplication;
 import sdkx.sectiontwoproject.base.BaseActivity;
 import sdkx.sectiontwoproject.bean.PerIn;
-
-import static sdkx.sectiontwoproject.util.UtilLog.isFastClick;
+import sdkx.sectiontwoproject.util.SingleClick;
 
 public class PerInfActivity extends BaseActivity {
 
@@ -99,12 +95,9 @@ public class PerInfActivity extends BaseActivity {
         typeTv.setText(Html.fromHtml("<b>报考类别: </b>"+perIn.getData().getServiceType()));
     }
 
-
+    @SingleClick
     @OnClick(R.id.start_tv)
-    public void onViewClicked() {
-        if (isFastClick()) {
-            return;
-        }
+    public void onViewClicked(View view) {
         //跳转开始考试界面
         Intent intent=new Intent(this,StartActivity.class);
         intent.putExtra("id",perIn.getData().getExamineeId());
