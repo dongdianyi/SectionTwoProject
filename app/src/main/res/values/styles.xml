@@ -9,7 +9,7 @@
     </style>
 
 
-    <!--取消Bar-->
+    <!--取消Bar和启动白屏-->
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

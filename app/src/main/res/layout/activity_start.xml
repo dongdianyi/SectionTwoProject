@@ -94,6 +94,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
+            android:id="@+id/myView_relative"
             android:layout_height="match_parent">
 
             <sdkx.sectiontwoproject.myview.MyView

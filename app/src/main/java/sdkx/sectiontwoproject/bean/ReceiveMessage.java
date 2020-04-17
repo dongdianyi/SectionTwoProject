@@ -59,7 +59,7 @@ public class ReceiveMessage {
 
     public static class DataBean {
         /**
-         * state : 1
+         * state : 1  0
          * reason : 出界考试不合格
          */
 

@@ -67,7 +67,6 @@ public class Car {
          * carPoints : [{"number":"A1","lng":117.00008,"lat":36.00003,"side":65,"hypotenuse":0,"vertex":44.99999999999999},{"number":"A2","lng":117.00009111,"lat":36.00003,"side":0,"hypotenuse":-30,"vertex":44.99999999999999},{"number":"A3","lng":117.00008,"lat":36.00004,"side":0,"hypotenuse":-30,"vertex":44.99999999999999},{"number":"A4","lng":117.00007,"lat":36.00004,"side":-25,"hypotenuse":0,"vertex":44.99999999999999},{"number":"1","lng":117.00008,"lat":36.00005,"side":30,"hypotenuse":71.59,"vertex":24.78},{"number":"2","lng":117.00008,"lat":36.00003,"side":30,"hypotenuse":-71.59,"vertex":24.78},{"number":"3","lng":117.00009,"lat":36.00004,"side":-30,"hypotenuse":-39.05,"vertex":50.19},{"number":"4","lng":117.00008,"lat":36.00005,"side":-30,"hypotenuse":39.05,"vertex":50.19}]
          * length : 0.9
          * width : 0.6
-         *
          */
 
         private double gpswidth;
@@ -75,6 +74,8 @@ public class Car {
         private double gpslength;
         private double length;
         private double width;
+        private LocationData location;
+        private FlameoutData flameout;
         private List<CarPointsBean> carPoints;
 
 
@@ -87,7 +88,7 @@ public class Car {
         }
 
         public String getCarType() {
-            if (carType==null)
+            if (carType == null)
                 return "";
 
             return carType;
@@ -127,6 +128,22 @@ public class Car {
 
         public void setCarPoints(List<CarPointsBean> carPoints) {
             this.carPoints = carPoints;
+        }
+
+        public LocationData getLocation() {
+            return location;
+        }
+
+        public void setLocation(LocationData location) {
+            this.location = location;
+        }
+
+        public FlameoutData getFlameout() {
+            return flameout;
+        }
+
+        public void setFlameout(FlameoutData flameout) {
+            this.flameout = flameout;
         }
 
         public static class CarPointsBean {
@@ -192,6 +209,60 @@ public class Car {
 
             public void setVertex(double vertex) {
                 this.vertex = vertex;
+            }
+        }
+
+        public static class LocationData {
+            private String baudRate;
+            private String serialNumber;
+
+            public int getBaudRate() {
+                if (baudRate==null) {
+                    return 115200;
+                }
+                if (!baudRate.matches("\\d+")) {
+                    return 115200;
+                }
+                return Integer.parseInt(baudRate);
+            }
+
+            public void setBaudRate(String baudRate) {
+                this.baudRate = baudRate;
+            }
+
+            public String getSerialNumber() {
+                return serialNumber;
+            }
+
+            public void setSerialNumber(String serialNumber) {
+                this.serialNumber = serialNumber;
+            }
+        }
+
+        public static class FlameoutData {
+            private String baudRate;
+            private String serialNumber;
+
+            public int getBaudRate() {
+                if (baudRate==null) {
+                    return 115200;
+                }
+                if (!baudRate.matches("\\d+")) {
+                    return 115200;
+                }
+                return Integer.parseInt(baudRate);
+            }
+
+            public void setBaudRate(String baudRate) {
+                this.baudRate = baudRate;
+            }
+
+            public String getSerialNumber() {
+                return serialNumber;
+            }
+
+            public void setSerialNumber(String serialNumber) {
+                this.serialNumber = serialNumber;
             }
         }
     }

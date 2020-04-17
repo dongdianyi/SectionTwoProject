@@ -1,5 +1,6 @@
 package sdkx.sectiontwoproject.base;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -29,7 +30,14 @@ import static sdkx.sectiontwoproject.util.UtilLog.showToast;
 
 
 public abstract class BaseActivity<T> extends AppCompatActivity implements IView, OnOpenSerialPortListener {
-
+    /**
+     * 需要进行检测的权限数组
+     */
+    protected String[] needPermissions = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.READ_PHONE_STATE
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

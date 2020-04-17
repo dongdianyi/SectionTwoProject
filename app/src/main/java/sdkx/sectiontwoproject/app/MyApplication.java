@@ -76,7 +76,7 @@ public class MyApplication extends Application {
                     //.addHeader("app>>head","app_head_global")
                     //添加全局请求参数-只支持String类型
                     // .addParam("app_param","app_param_global")
-                    //设置Cookie管理监听。
+                    //设置Cookie管理监听
                     // .setCookieStoreListener(new DBCookieStore.CookieStoreListener())
                     //设置主机验证
                     // .setHostnameVerifier(new HostnameVerifier())

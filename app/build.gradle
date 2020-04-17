@@ -63,4 +63,7 @@ dependencies {
     //防止重复点击
     implementation 'org.aspectj:aspectjrt:1.9.5'
 
+    //动态权限
+    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+
 }

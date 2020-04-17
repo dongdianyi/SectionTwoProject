@@ -23,11 +23,14 @@ public class UtilLog {
 
     /**
      *
-     * @param flag
-     * @param content
+     * @param flag flag
+     * @param content content
      */
     public static void showLogE(String flag,String content){
         Log.e(flag, content);
     }
+
+
+
 
 }

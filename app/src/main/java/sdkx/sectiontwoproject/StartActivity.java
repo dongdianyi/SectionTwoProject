@@ -3,6 +3,7 @@ package sdkx.sectiontwoproject;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 import sdkx.sectiontwoproject.app.MyApplication;
 import sdkx.sectiontwoproject.base.BaseActivity;
 import sdkx.sectiontwoproject.bean.Car;
@@ -45,7 +45,7 @@ import sdkx.sectiontwoproject.myview.MyView;
 import sdkx.sectiontwoproject.myview.MyViewCar;
 import sdkx.sectiontwoproject.util.CrossBoundary;
 import sdkx.sectiontwoproject.util.JWebSocketClient;
-import sdkx.sectiontwoproject.util.SingleClick;
+import sdkx.sectiontwoproject.util.ShotScreenManager;
 import sdkxsoft.com.CarTrajectory;
 import sdkxsoft.com.pojo.SitePort;
 import sdkxsoft.com.pojo.XyPojo;
@@ -69,6 +69,8 @@ public class StartActivity extends BaseActivity<String> {
     MyView myView;
     @BindView(R.id.myview_car)
     MyViewCar myviewCar;
+    @BindView(R.id.myView_relative)
+    RelativeLayout myViewRelative;
     NoHttpRx noHttpRx;
 
     List<SitePort> mList;
@@ -102,10 +104,15 @@ public class StartActivity extends BaseActivity<String> {
     //学生id
     private String id;
 
+    //终止标记
+    private boolean isTermination=false;
+
     private SoundPool mSoundPool;
     private ReceiveMessage receiveMessage;
 
     private final int whatNum = 0x0;
+    private Car.DataBean.LocationData locationData;
+    private Car.DataBean.FlameoutData flameoutData;
 
     @Override
     public int intiLayout() {
@@ -120,26 +127,26 @@ public class StartActivity extends BaseActivity<String> {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
         //截屏
-//        Bitmap bitmap = ShotScreenManager.getInstance().picShotScreen(this, getFilesDir().getAbsolutePath() + "pic.jpg", 70);
-//        Log.e("bitmap", bitmap.toString());
+       /* Bitmap bitmap = ShotScreenManager.getInstance().picShotScreen(this, getFilesDir().getAbsolutePath() + "pic.jpg", 70);
+        Log.e("bitmap", bitmap.toString());
+        Bitmap bitmap = ShotScreenManager.getViewBitmap(myViewRelative);
+        showLogE("bitmap",bitmap.toString());
+        ShotScreenManager.savePhotoToSDCard(bitmap, "/sdcard/file", "img");*/
         crossBoundary = new CrossBoundary();
         lngLatData = new ArrayList<>();
         // 未按规定路线行驶；越界；碰杆；熄火；考官主观判断；
         gradeArr = new int[]{1, 1, 1, 1, 1};
-//        location = new int[2];
-//        myView.getLocationOnScreen(location);
-//        myView.post(new Runnable() {
-//            @Override
-//            public void run() {
-////                Log.e("myView宽高：", myView.getWidth() + "---" + myView.getHeight());
-////                lngLatToXYTools = CarTrajectory.getSiteTools(myView.getWidth()-20, myView.getHeight()-20);
-//
-//            }
-//        });
+       /* location = new int[2];
+        myView.getLocationOnScreen(location);
+        myView.post(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("myView宽高：", myView.getWidth() + "---" + myView.getHeight());
+                lngLatToXYTools = CarTrajectory.getSiteTools(myView.getWidth()-20, myView.getHeight()-20);
 
+            }
+        });*/
 
-        //初始化webSocket
-        initSocketClient();
 
         //播放音频文件
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -148,31 +155,43 @@ public class StartActivity extends BaseActivity<String> {
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .build();
             mSoundPool = new SoundPool.Builder()
-                    .setMaxStreams(10)
+                    .setMaxStreams(1)
                     .setAudioAttributes(aab)
                     .build();
         } else {
-            mSoundPool = new SoundPool(60, AudioManager.STREAM_MUSIC, 8);
+            mSoundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 8);
         }
         //创建一个HashMap对象,将要播放的音频流保存到HashMap对象中
+        //load完成之后才能进行play 可能需要一秒之后才能load完成
         final HashMap<Integer, Integer> soundmap = new HashMap<Integer, Integer>();
-        soundmap.put(0, mSoundPool.load(this, R.raw.music12613, 1));
+        soundmap.put(0, mSoundPool.load(this, R.raw.music12612, 1));
         soundmap.put(1, mSoundPool.load(this, R.raw.music12613, 1));
         soundmap.put(2, mSoundPool.load(this, R.raw.music12613, 1));
         soundmap.put(3, mSoundPool.load(this, R.raw.music12613, 1));
         soundmap.put(4, mSoundPool.load(this, R.raw.music12613, 1));
         soundmap.put(5, mSoundPool.load(this, R.raw.music12613, 1));
         soundmap.put(6, mSoundPool.load(this, R.raw.music12613, 1));
-//        mSoundPool.play(soundmap.get(0), 1, 1, 0, 0, 1);  //播放所选音频
+        new Handler().postDelayed(new Runnable() {
 
+            @Override
+            public void run() {
+//                showLogE("id0", mSoundPool.play(soundmap.get(0), 1, 1, 0, 0, 1) + "");  //播放所选音频
+//                showLogE("id1", mSoundPool.play(soundmap.get(1), 1, 1, 0, 0, 1) + "");  //播放所选音频
+//                showLogE("id2", mSoundPool.play(soundmap.get(2), 1, 1, 0, 0, 1) + "");  //播放所选音频
+//                showLogE("id3", mSoundPool.play(soundmap.get(3), 1, 1, 0, 0, 1) + "");  //播放所选音频
+//                showLogE("id4", mSoundPool.play(soundmap.get(4), 1, 1, 0, 0, 1) + "");  //播放所选音频
+//                showLogE("id5", mSoundPool.play(soundmap.get(5), 1, 1, 0, 0, 1) + "");  //播放所选音频
+//                showLogE("id6", mSoundPool.play(soundmap.get(6), 1, 1, 0, 0, 1) + "");  //播放所选音频
 
+            }
+        }, 1000);
         mList = new ArrayList<>();
 
         noHttpRx = new NoHttpRx(this);
 
         map = new HashMap();
+        map.put("androidId", HttpUrl.ANDROIDID);
         noHttpRx.postHttpJson("考场", HttpUrl.GETFIELD_URL, JSON.toJSONString(map), null);
-
 
     }
 
@@ -222,9 +241,15 @@ public class StartActivity extends BaseActivity<String> {
                 if (car.getData() == null) {
                     return;
                 }
+                locationData = car.getData().getLocation();
+                flameoutData = car.getData().getFlameout();
                 myviewCar.getCar(car, lngLatToXYTools);
                 //录入车辆场地信息
                 crossBoundary.setMessage(JSON.toJSONString(filed.getData()), JSON.toJSONString(car.getData().getCarPoints()), "");
+
+                //初始化webSocket
+                initSocketClient();
+
                 serialPort();
             } catch (JsonSyntaxException e) {
                 showLogE("车解析异常：", e.getMessage());
@@ -301,11 +326,12 @@ public class StartActivity extends BaseActivity<String> {
 //                                        double angle = Double.parseDouble(arr[10]);
 //                                        double angle = Double.parseDouble(arr[11]);
                                         showLogE("定位截取的数据：", "经度：" + lng + "纬度" + lat + "angle:" + angle);
-
+                                        if (isTermination||isShow) {
+                                            return;
+                                        }
                                         lngLatData.add(new SitePort(lng, lat, angle));
 
                                         myviewCar.getPoint(lngLatToXYTools.getLngLatToXyPro(lng, lat), rotationAngleTools.getCarAnglePro(angle));
-                                        if (!isShow) {
                                             if (crossBoundary.isCross(locationStr1) == OUT_ERROR) {
                                                 //越界
                                                 gradeArr[1] = 0;
@@ -338,7 +364,6 @@ public class StartActivity extends BaseActivity<String> {
                                                     return;
                                                 }
                                             }
-                                        }
 
                                     }
                                 }
@@ -358,7 +383,7 @@ public class StartActivity extends BaseActivity<String> {
                             });
                         }
                     })
-                    .openSerialPort(new File("/dev/ttyS2"), 115200);
+                    .openSerialPort(new File(locationData.getSerialNumber()), locationData.getBaudRate());
 //                        .openSerialPort(devices.get(i).getFile(), 9600);
 
             showLogE("串口：", "onCreate: openSerialPort = " + openSerialPort);
@@ -415,7 +440,7 @@ public class StartActivity extends BaseActivity<String> {
                                             //熄火
                                             gradeArr[3] = 0;
                                             isShow = true;
-                                            submit(getResources().getString(R.string.fire));
+                                            submit(getResources().getString(R.string.no_fire));
                                         }
                                     }
                                 }
@@ -435,7 +460,7 @@ public class StartActivity extends BaseActivity<String> {
                             });
                         }
                     })
-                    .openSerialPort(new File("/dev/ttyS4"), 115200);
+                    .openSerialPort(new File(flameoutData.getSerialNumber()), flameoutData.getBaudRate());
 //                        .openSerialPort(devices.get(i).getFile(), 9600);
 
             showLogE("串口：", "onCreate: openSerialPort2 = " + openSerialPort2);
@@ -457,6 +482,7 @@ public class StartActivity extends BaseActivity<String> {
         }
         //关闭webSocket连接
         closeConnect();
+        mSoundPool.release();
         super.onDestroy();
     }
 
@@ -519,6 +545,9 @@ public class StartActivity extends BaseActivity<String> {
         this.info = info;
         noHttpRx = new NoHttpRx(this);
         map = new HashMap();
+        Bitmap bitmap=ShotScreenManager.getViewBitmap(myViewRelative);
+        showLogE("bitmap", ShotScreenManager.bitmapToBase64(bitmap));
+        map.put("image", ShotScreenManager.bitmapToBase64(bitmap));
         map.put("sitePort", lngLatData);
         map.put("androidId", HttpUrl.ANDROIDID);
         map.put("gradeArr", gradeArr);
@@ -566,16 +595,36 @@ public class StartActivity extends BaseActivity<String> {
                     if (client != null && client.isOpen()) {
                         client.send(JSON.toJSONString(new ReceiveMessage("reply", receiveMessage.getData(), "1212", id)));
                     }
-                    if (receiveMessage.getData().getReason() != null && !isShow) {
-                        gradeArr[4] = 0;
-                        isShow = true;
-                        submit(receiveMessage.getData().getReason());
+                    if (!isShow) {
+                        if (receiveMessage.getData().getState() == 0) {
+                            //0考试结束 判断全部点符不符合规定
+                            isShow = true;
+                            if (isTermination) {
+                                //违反考试纪律
+                                submit(receiveMessage.getData().getReason());
+                            } else {
+                                Boolean msgboo = pathInOrderPro.detectionPathAll(lngLatData);
+                                if (msgboo != null) {
+                                    if (msgboo == false) {
+                                        //false未按规定路线行驶
+                                        gradeArr[0] = 0;
+                                        submit(getResources().getString(R.string.no_regulations));
+                                    } else {
+                                        //成绩合格
+                                        submit(getResources().getString(R.string.success));
+                                    }
+                                }
+                            }
+                            } else {
+                                //考试终止
+                                isTermination = true;
+                                gradeArr[4] = 0;
+                            }
                     }
-
-                } catch (JsonSyntaxException e) {
-                    showLogE("JsonSyntaxException", e.getMessage());
+                    } catch(JsonSyntaxException e){
+                        showLogE("JsonSyntaxException", e.getMessage());
+                    }
                 }
-            }
             return false;
         }
     });
@@ -637,6 +686,5 @@ public class StartActivity extends BaseActivity<String> {
             }
         }.start();
     }
-
 
 }
