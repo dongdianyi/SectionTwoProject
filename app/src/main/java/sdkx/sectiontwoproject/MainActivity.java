@@ -43,6 +43,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        MyApplication.getInstance().addActivity(this);
 
       /*  RxPermissions rxPermission = new RxPermissions(this);
         rxPermission
@@ -68,7 +69,6 @@ public class MainActivity extends BaseActivity {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
         showLogE("SERIALNUMBER", ANDROIDID);
-        MyApplication.getInstance().addActivity(this);
     }
 
     @SingleClick

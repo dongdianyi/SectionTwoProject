@@ -40,7 +40,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/pre_tv"
+                android:id="@+id/pre"
                 android:layout_width="@dimen/dp_200"
                 android:layout_height="@dimen/dp_50"
                 android:layout_below="@id/content_tv"

@@ -184,7 +184,6 @@ public class NoHttpRx implements IModelBiz {
                     @Override
                     public void onNext(String s) {
                         RxNoHttpUtils.cancel(flag);
-
                         try {
                             JSONObject jsonObject = new JSONObject(s);
                             if (TextUtils.isEmpty(s) || s.equals("") || s.trim().equals("")) {

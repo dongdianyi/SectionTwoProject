@@ -35,10 +35,10 @@ public class DiaLogActivity extends Activity {
         hideTopUIMenu();
         hideBottomUIMenu();
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_dia_log);
-        ButterKnife.bind(this);
         MyApplication.getInstance().addActivity(this);
+
+        ButterKnife.bind(this);
         isShow = getIntent().getBooleanExtra("isShow",false);
         contentTv.setText(getIntent().getStringExtra("context"));
         if (isShow) {
@@ -55,16 +55,15 @@ public class DiaLogActivity extends Activity {
 
     }
     @SingleClick
-    @OnClick({R.id.pre_tv, R.id.close_iv})
+    @OnClick({R.id.pre, R.id.close_iv})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.pre_tv:
+            case R.id.pre:
+                MyApplication.getInstance().exit();
                 if (isShow) {
-                    MyApplication.getInstance().exit();
                     System.exit(0);
                 } else {
                     startActivity(new Intent(this, MainActivity.class));
-                    MyApplication.getInstance().exit();
                 }
                 break;
             case R.id.close_iv:

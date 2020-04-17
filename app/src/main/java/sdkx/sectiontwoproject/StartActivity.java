@@ -23,6 +23,7 @@ import com.kongqw.serialportlibrary.Device;
 import com.kongqw.serialportlibrary.SerialPortFinder;
 import com.kongqw.serialportlibrary.SerialPortManager;
 import com.kongqw.serialportlibrary.listener.OnSerialPortDataListener;
+import com.liqi.nohttputils.nohttp.NoHttpInit;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -113,6 +114,7 @@ public class StartActivity extends BaseActivity<String> {
     private final int whatNum = 0x0;
     private Car.DataBean.LocationData locationData;
     private Car.DataBean.FlameoutData flameoutData;
+    private HashMap<Integer, Integer> soundmap;
 
     @Override
     public int intiLayout() {
@@ -163,28 +165,13 @@ public class StartActivity extends BaseActivity<String> {
         }
         //创建一个HashMap对象,将要播放的音频流保存到HashMap对象中
         //load完成之后才能进行play 可能需要一秒之后才能load完成
-        final HashMap<Integer, Integer> soundmap = new HashMap<Integer, Integer>();
-        soundmap.put(0, mSoundPool.load(this, R.raw.music12612, 1));
-        soundmap.put(1, mSoundPool.load(this, R.raw.music12613, 1));
-        soundmap.put(2, mSoundPool.load(this, R.raw.music12613, 1));
-        soundmap.put(3, mSoundPool.load(this, R.raw.music12613, 1));
-        soundmap.put(4, mSoundPool.load(this, R.raw.music12613, 1));
-        soundmap.put(5, mSoundPool.load(this, R.raw.music12613, 1));
-        soundmap.put(6, mSoundPool.load(this, R.raw.music12613, 1));
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-//                showLogE("id0", mSoundPool.play(soundmap.get(0), 1, 1, 0, 0, 1) + "");  //播放所选音频
-//                showLogE("id1", mSoundPool.play(soundmap.get(1), 1, 1, 0, 0, 1) + "");  //播放所选音频
-//                showLogE("id2", mSoundPool.play(soundmap.get(2), 1, 1, 0, 0, 1) + "");  //播放所选音频
-//                showLogE("id3", mSoundPool.play(soundmap.get(3), 1, 1, 0, 0, 1) + "");  //播放所选音频
-//                showLogE("id4", mSoundPool.play(soundmap.get(4), 1, 1, 0, 0, 1) + "");  //播放所选音频
-//                showLogE("id5", mSoundPool.play(soundmap.get(5), 1, 1, 0, 0, 1) + "");  //播放所选音频
-//                showLogE("id6", mSoundPool.play(soundmap.get(6), 1, 1, 0, 0, 1) + "");  //播放所选音频
-
-            }
-        }, 1000);
+        soundmap = new HashMap<Integer, Integer>();
+        soundmap.put(0, mSoundPool.load(this, R.raw.no_regulations, 1));
+        soundmap.put(1, mSoundPool.load(this, R.raw.cross, 1));
+        soundmap.put(2, mSoundPool.load(this, R.raw.bumper_rod, 1));
+        soundmap.put(3, mSoundPool.load(this, R.raw.no_fire, 1));
+        soundmap.put(4, mSoundPool.load(this, R.raw.no_discipline, 1));
+        soundmap.put(5, mSoundPool.load(this, R.raw.success, 1));
         mList = new ArrayList<>();
 
         noHttpRx = new NoHttpRx(this);
@@ -258,7 +245,11 @@ public class StartActivity extends BaseActivity<String> {
 
         }
         if (flag.equals("提交数据")) {
-            showDialog(StartActivity.this, false, info);
+            if (isShow) {
+                return;
+            }
+            isShow = true;
+            showDialog(this, false, info);
         }
 
     }
@@ -335,22 +326,19 @@ public class StartActivity extends BaseActivity<String> {
                                             if (crossBoundary.isCross(locationStr1) == OUT_ERROR) {
                                                 //越界
                                                 gradeArr[1] = 0;
-                                                isShow = true;
-                                                submit(getResources().getString(R.string.cross));
+                                                submit(getResources().getString(R.string.cross),1);
                                                 return;
                                             }
                                             if (crossBoundary.isCross(locationStr1) == ASTERNWAY) {
                                                 //库外倒车 未按规定路线行驶
                                                 gradeArr[0] = 0;
-                                                isShow = true;
-                                                submit(getResources().getString(R.string.no_regulations));
+                                                submit(getResources().getString(R.string.no_regulations),0);
                                                 return;
                                             }
                                             if (crossBoundary.isCross(locationStr1) == PILE_ERROR) {
                                                 //碰杆
                                                 gradeArr[2] = 0;
-                                                isShow = true;
-                                                submit(getResources().getString(R.string.bumper_rod));
+                                                submit(getResources().getString(R.string.bumper_rod),2);
                                                 return;
                                             }
 
@@ -359,8 +347,7 @@ public class StartActivity extends BaseActivity<String> {
                                                 if (msgboo == false) {
                                                     //false未按规定路线行驶
                                                     gradeArr[0] = 0;
-                                                    isShow = true;
-                                                    submit(getResources().getString(R.string.no_regulations));
+                                                    submit(getResources().getString(R.string.no_regulations),0);
                                                     return;
                                                 }
                                             }
@@ -439,8 +426,7 @@ public class StartActivity extends BaseActivity<String> {
                                         if (fireStr1.contains("AA441204") && !isShow) {
                                             //熄火
                                             gradeArr[3] = 0;
-                                            isShow = true;
-                                            submit(getResources().getString(R.string.no_fire));
+                                            submit(getResources().getString(R.string.no_fire),3);
                                         }
                                     }
                                 }
@@ -541,7 +527,8 @@ public class StartActivity extends BaseActivity<String> {
     /**
      * 提交数据
      */
-    public void submit(String info) {
+    public void submit(String info,int index) {
+        showLogE("streamId", mSoundPool.play(soundmap.get(index), 1, 1, 0, 0, 1) + "");  //播放所选音频
         this.info = info;
         noHttpRx = new NoHttpRx(this);
         map = new HashMap();
@@ -598,20 +585,19 @@ public class StartActivity extends BaseActivity<String> {
                     if (!isShow) {
                         if (receiveMessage.getData().getState() == 0) {
                             //0考试结束 判断全部点符不符合规定
-                            isShow = true;
                             if (isTermination) {
                                 //违反考试纪律
-                                submit(receiveMessage.getData().getReason());
+                                submit(receiveMessage.getData().getReason(),4);
                             } else {
                                 Boolean msgboo = pathInOrderPro.detectionPathAll(lngLatData);
                                 if (msgboo != null) {
                                     if (msgboo == false) {
                                         //false未按规定路线行驶
                                         gradeArr[0] = 0;
-                                        submit(getResources().getString(R.string.no_regulations));
+                                        submit(getResources().getString(R.string.no_regulations),0);
                                     } else {
                                         //成绩合格
-                                        submit(getResources().getString(R.string.success));
+                                        submit(getResources().getString(R.string.success),5);
                                     }
                                 }
                             }
