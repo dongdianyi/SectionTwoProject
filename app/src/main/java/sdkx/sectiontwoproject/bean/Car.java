@@ -74,10 +74,27 @@ public class Car {
         private double gpslength;
         private double length;
         private double width;
+        private double outLine;
+        private double pileLine;
         private LocationData location;
         private FlameoutData flameout;
         private List<CarPointsBean> carPoints;
 
+        public double getOutLine() {
+            return outLine;
+        }
+
+        public void setOutLine(double outLine) {
+            this.outLine = outLine;
+        }
+
+        public double getPileLine() {
+            return pileLine;
+        }
+
+        public void setPileLine(double pileLine) {
+            this.pileLine = pileLine;
+        }
 
         public double getGpswidth() {
             return gpswidth;
@@ -231,6 +248,9 @@ public class Car {
             }
 
             public String getSerialNumber() {
+                if (serialNumber==null) {
+                    return "";
+                }
                 return serialNumber;
             }
 
@@ -258,6 +278,9 @@ public class Car {
             }
 
             public String getSerialNumber() {
+                if (serialNumber==null) {
+                    return "";
+                }
                 return serialNumber;
             }
 

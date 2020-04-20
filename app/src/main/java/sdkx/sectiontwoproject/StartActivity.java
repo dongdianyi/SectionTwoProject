@@ -106,7 +106,7 @@ public class StartActivity extends BaseActivity<String> {
     private String id;
 
     //终止标记
-    private boolean isTermination=false;
+    private boolean isTermination = false;
 
     private SoundPool mSoundPool;
     private ReceiveMessage receiveMessage;
@@ -115,6 +115,7 @@ public class StartActivity extends BaseActivity<String> {
     private Car.DataBean.LocationData locationData;
     private Car.DataBean.FlameoutData flameoutData;
     private HashMap<Integer, Integer> soundmap;
+    private  boolean isSub=false;
 
     @Override
     public int intiLayout() {
@@ -232,7 +233,7 @@ public class StartActivity extends BaseActivity<String> {
                 flameoutData = car.getData().getFlameout();
                 myviewCar.getCar(car, lngLatToXYTools);
                 //录入车辆场地信息
-                crossBoundary.setMessage(JSON.toJSONString(filed.getData()), JSON.toJSONString(car.getData().getCarPoints()), "");
+                crossBoundary.setMessage(JSON.toJSONString(filed.getData()), JSON.toJSONString(car.getData().getCarPoints()), "", car.getData().getOutLine(), car.getData().getPileLine());
 
                 //初始化webSocket
                 initSocketClient();
@@ -276,7 +277,8 @@ public class StartActivity extends BaseActivity<String> {
                     .setOnSerialPortDataListener(new OnSerialPortDataListener() {
                         @Override
                         public void onDataReceived(byte[] bytes) {
-                            showLogE("定位串口：", "[ byte[] ]: " + Arrays.toString(bytes) + "\n[ String ]: " + new String(bytes));
+                            showLogE("定位串口：", "[ byte[] ]: " + Arrays.toString(bytes)
+                                    + "\n[ String ]: " + new String(bytes));
 
                             try {
                                 Thread.sleep(100);
@@ -294,7 +296,7 @@ public class StartActivity extends BaseActivity<String> {
                                         if (locationStr.indexOf("$") < locationStr.indexOf("$", locationStr.indexOf("$") + 1)) {
                                             locationStr1 = locationStr.substring(locationStr.indexOf("$"), locationStr.indexOf("$", locationStr.indexOf("$") + 1));
                                             locationStr2 = locationStr.substring(locationStr.indexOf("$", locationStr.indexOf("$") + 1));
-                                            showLogE("locationStr12：", locationStr1 + "\n" + locationStr2);
+                                            showLogE("locationStr1：", locationStr1 + "\nlocationStr2：" + locationStr2);
 
                                         } else {
                                             locationStr2 = locationStr;
@@ -317,40 +319,40 @@ public class StartActivity extends BaseActivity<String> {
 //                                        double angle = Double.parseDouble(arr[10]);
 //                                        double angle = Double.parseDouble(arr[11]);
                                         showLogE("定位截取的数据：", "经度：" + lng + "纬度" + lat + "angle:" + angle);
-                                        if (isTermination||isShow) {
+                                        if (isTermination || isShow) {
                                             return;
                                         }
                                         lngLatData.add(new SitePort(lng, lat, angle));
 
                                         myviewCar.getPoint(lngLatToXYTools.getLngLatToXyPro(lng, lat), rotationAngleTools.getCarAnglePro(angle));
-                                            if (crossBoundary.isCross(locationStr1) == OUT_ERROR) {
-                                                //越界
-                                                gradeArr[1] = 0;
-                                                submit(getResources().getString(R.string.cross),1);
-                                                return;
-                                            }
-                                            if (crossBoundary.isCross(locationStr1) == ASTERNWAY) {
-                                                //库外倒车 未按规定路线行驶
-                                                gradeArr[0] = 0;
-                                                submit(getResources().getString(R.string.no_regulations),0);
-                                                return;
-                                            }
-                                            if (crossBoundary.isCross(locationStr1) == PILE_ERROR) {
-                                                //碰杆
-                                                gradeArr[2] = 0;
-                                                submit(getResources().getString(R.string.bumper_rod),2);
-                                                return;
-                                            }
+                                        if (crossBoundary.isCross(locationStr1) == OUT_ERROR) {
+                                            //越界
+                                            gradeArr[1] = 0;
+                                            submit(getResources().getString(R.string.cross), 1);
+                                            return;
+                                        }
+                                        if (crossBoundary.isCross(locationStr1) == ASTERNWAY) {
+                                            //库外倒车 未按规定路线行驶
+                                            gradeArr[0] = 0;
+                                            submit(getResources().getString(R.string.no_regulations), 0);
+                                            return;
+                                        }
+                                        if (crossBoundary.isCross(locationStr1) == PILE_ERROR) {
+                                            //碰杆
+                                            gradeArr[2] = 0;
+                                            submit(getResources().getString(R.string.bumper_rod), 2);
+                                            return;
+                                        }
 
-                                            Boolean msgboo = pathInOrderPro.detectionPath(lng, lat);
-                                            if (msgboo != null) {
-                                                if (msgboo == false) {
-                                                    //false未按规定路线行驶
-                                                    gradeArr[0] = 0;
-                                                    submit(getResources().getString(R.string.no_regulations),0);
-                                                    return;
-                                                }
+                                        Boolean msgboo = pathInOrderPro.detectionPath(lng, lat);
+                                        if (msgboo != null) {
+                                            if (msgboo == false) {
+                                                //false未按规定路线行驶
+                                                gradeArr[0] = 0;
+                                                submit(getResources().getString(R.string.no_regulations), 0);
+                                                return;
                                             }
+                                        }
 
                                     }
                                 }
@@ -360,7 +362,8 @@ public class StartActivity extends BaseActivity<String> {
                         @Override
                         public void onDataSent(byte[] bytes) {
 
-                            showLogE("定位串口：", "[ byte[] ]: " + Arrays.toString(bytes) + "\n[ String ]: " + new String(bytes));
+                            showLogE("定位串口：", "[ byte[] ]: " + Arrays.toString(bytes)
+                                    + "\n[ String ]: " + new String(bytes));
                             final byte[] finalBytes = bytes;
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -388,8 +391,10 @@ public class StartActivity extends BaseActivity<String> {
                     .setOnSerialPortDataListener(new OnSerialPortDataListener() {
                         @Override
                         public void onDataReceived(byte[] bytes) {
-                            //串口转大写16进制
-                            showLogE("熄火串口：", "[ byte[] ]: " + Arrays.toString(bytes) + "\n[ String ]: " + new BigInteger(1, bytes).toString(16));
+                            //串口转16进制
+                            showLogE("熄火串口：", "[ byte[] ]: " + Arrays.toString(bytes)
+                                    + "\n[ String ]: " + new BigInteger(1, bytes).toString(16)
+                                    + "\nString:" + new String(bytes));
 
                             try {
                                 Thread.sleep(100);
@@ -402,8 +407,6 @@ public class StartActivity extends BaseActivity<String> {
 
                                     fireStr = fireStr2 + new BigInteger(1, bytes).toString(16);
                                     fireStr = fireStr.toUpperCase();
-//                                    fireStr1 =   new BigInteger(1, bytes).toString(16);
-//                                    fireStr1=fireStr1.toUpperCase();
                                     if (fireStr.contains("AA4412")) {
                                         showLogE("熄火数据AA4412：", fireStr + "\n" + fireStr.indexOf("AA4412") + "----" + fireStr.indexOf("AA4412", fireStr.indexOf("AA4412") + 1));
 
@@ -426,7 +429,7 @@ public class StartActivity extends BaseActivity<String> {
                                         if (fireStr1.contains("AA441204") && !isShow) {
                                             //熄火
                                             gradeArr[3] = 0;
-                                            submit(getResources().getString(R.string.no_fire),3);
+                                            submit(getResources().getString(R.string.no_fire), 3);
                                         }
                                     }
                                 }
@@ -527,19 +530,21 @@ public class StartActivity extends BaseActivity<String> {
     /**
      * 提交数据
      */
-    public void submit(String info,int index) {
-        showLogE("streamId", mSoundPool.play(soundmap.get(index), 1, 1, 0, 0, 1) + "");  //播放所选音频
-        this.info = info;
-        noHttpRx = new NoHttpRx(this);
-        map = new HashMap();
-        Bitmap bitmap=ShotScreenManager.getViewBitmap(myViewRelative);
-        showLogE("bitmap", ShotScreenManager.bitmapToBase64(bitmap));
-        map.put("image", ShotScreenManager.bitmapToBase64(bitmap));
-        map.put("sitePort", lngLatData);
-        map.put("androidId", HttpUrl.ANDROIDID);
-        map.put("gradeArr", gradeArr);
-        map.put("info", info);
-        noHttpRx.postHttpJson("提交数据", HttpUrl.SETDATA_URL, JSON.toJSONString(map), null);
+    public void submit(String info, int index) {
+        if (!isSub) {
+            isSub=true;
+            showLogE("streamId", mSoundPool.play(soundmap.get(index), 1, 1, 0, 0, 1) + "");  //播放所选音频
+            this.info = info;
+            noHttpRx = new NoHttpRx(this);
+            map = new HashMap();
+            Bitmap bitmap = ShotScreenManager.getViewBitmap(myViewRelative);
+            map.put("image", ShotScreenManager.bitmapToBase64(bitmap));
+            map.put("sitePort", lngLatData);
+            map.put("androidId", HttpUrl.ANDROIDID);
+            map.put("gradeArr", gradeArr);
+            map.put("info", info);
+            noHttpRx.postHttpJson("提交数据", HttpUrl.SETDATA_URL, JSON.toJSONString(map), null);
+        }
     }
 
    /* @SingleClick
@@ -587,30 +592,30 @@ public class StartActivity extends BaseActivity<String> {
                             //0考试结束 判断全部点符不符合规定
                             if (isTermination) {
                                 //违反考试纪律
-                                submit(receiveMessage.getData().getReason(),4);
+                                submit(receiveMessage.getData().getReason(), 4);
                             } else {
                                 Boolean msgboo = pathInOrderPro.detectionPathAll(lngLatData);
                                 if (msgboo != null) {
                                     if (msgboo == false) {
                                         //false未按规定路线行驶
                                         gradeArr[0] = 0;
-                                        submit(getResources().getString(R.string.no_regulations),0);
+                                        submit(getResources().getString(R.string.no_regulations), 0);
                                     } else {
                                         //成绩合格
-                                        submit(getResources().getString(R.string.success),5);
+                                        submit(getResources().getString(R.string.success), 5);
                                     }
                                 }
                             }
-                            } else {
-                                //考试终止
-                                isTermination = true;
-                                gradeArr[4] = 0;
-                            }
+                        } else {
+                            //考试终止
+                            isTermination = true;
+                            gradeArr[4] = 0;
+                        }
                     }
-                    } catch(JsonSyntaxException e){
-                        showLogE("JsonSyntaxException", e.getMessage());
-                    }
+                } catch (JsonSyntaxException e) {
+                    showLogE("JsonSyntaxException", e.getMessage());
                 }
+            }
             return false;
         }
     });
@@ -638,7 +643,7 @@ public class StartActivity extends BaseActivity<String> {
             @Override
             public void onMessage(String message) {
                 //message就是接收到的消息
-                showLogE("接收到的消息", message);
+                showLogE("socket接收到的消息", message);
                 Message message1 = new Message();
                 message1.what = whatNum;
                 message1.obj = message;

@@ -4,13 +4,13 @@ public interface HttpUrl {
 
     //主地址
 //    String BASE_URL="http://192.168.1.17:8787";
-    String BASE_URL="http://192.168.2.127:8888";
+    String BASE_URL="http://192.168.2.174:8888";
     //淄博测试地址
 //    String BASE_URL="http://192.168.43.195:8888";
 
     //webScoket地址
-    String WEBSOCKET_URL="ws://192.168.1.17:8787/test/v1/websocket/";
-//    String WEBSOCKET_URL="ws://192.168.2.127:8888/test/v1/websocket/";
+//    String WEBSOCKET_URL="ws://192.168.1.17:8787/test/v1/websocket/";
+    String WEBSOCKET_URL="ws://192.168.2.174:8888/test/v1/websocket/";
 
     //获取场地
     String GETFIELD_URL="/android/v1/exam/getSitePoint";

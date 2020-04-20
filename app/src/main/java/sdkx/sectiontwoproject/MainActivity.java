@@ -24,6 +24,7 @@ import sdkx.sectiontwoproject.util.SingleClick;
 
 import static sdkx.sectiontwoproject.http.HttpUrl.ANDROIDID;
 import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
+import static sdkx.sectiontwoproject.util.UtilLog.showToast;
 
 public class MainActivity extends BaseActivity {
 
@@ -93,8 +94,10 @@ public class MainActivity extends BaseActivity {
     @Override
     public void toActivityData(String flag, String object) {
         super.toActivityData(flag, object);
+        showLogE("请求数据：" + flag, object);
         Gson gson = new Gson();
         if (gson.fromJson(object, PerIn.class).getData() == null) {
+            showToast("请求数据为空");
             return;
         }
         Intent intent = new Intent(this, PerInfActivity.class);

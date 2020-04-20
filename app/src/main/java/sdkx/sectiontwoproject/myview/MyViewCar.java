@@ -31,7 +31,6 @@ import sdkxsoft.com.tools.LngLatToXYTools;
 
 public class MyViewCar extends View {
 
-    private int result;
     private Bitmap bitmap, bitmapPoint;
     private Paint paint;
     private Path mPath;
@@ -89,10 +88,7 @@ public class MyViewCar extends View {
         alpha = (float) angle;
         //添加真实经纬度到集合
         Log.e("Gps经纬度", xyPojo.getX() + "---" + xyPojo.getY());
-        Log.e("Gps坐标", (float) (double) xyPojo.getX() + "---" + (float) (double) xyPojo.getY());
         Log.e("车左上", (int) (xyPojo.getX() - gpslength) + "---" + (int) (xyPojo.getY() - gpswidth));
-//        this.xyPojo2 = getNewPoint(xyPojo.getX(), xyPojo.getY(), angle, Math.sqrt(gpswidth * gpswidth + gpslength * gpslength));
-//        Log.e("旋转之后的点：", this.xyPojo2.getX() + "---" + this.xyPojo2.getY());
 
         invalidate();
     }
@@ -113,15 +109,12 @@ public class MyViewCar extends View {
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
         if (specMode == MeasureSpec.EXACTLY) {
-            result = specSize;
             return specSize;
         } else {
             if (specMode == MeasureSpec.AT_MOST) {
-                result = Math.min(200000, specSize);
                 return Math.min(200000, specSize);
             }
         }
-        result = 0;
         return 0;
     }
 
@@ -204,7 +197,6 @@ public class MyViewCar extends View {
 
         }
 
-        Log.e("屏幕尺寸", (Math.sqrt(1920 * 1920 + 1080 * 1080) / 25.4) + "result" + result);
     }
 
     /**

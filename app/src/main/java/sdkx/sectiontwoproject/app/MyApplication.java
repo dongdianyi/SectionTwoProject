@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.WindowManager;
 
 
@@ -18,6 +17,8 @@ import java.util.List;
 import androidx.multidex.MultiDex;
 import me.jessyan.autosize.AutoSizeConfig;
 import me.jessyan.autosize.unit.Subunits;
+
+import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
 
 public class MyApplication extends Application {
     //全局Context
@@ -155,12 +156,12 @@ public class MyApplication extends Application {
         // 屏幕高度(dp)
         int screenHeight = (int) (height / density);
 
-        Log.e("h_bl", "屏幕宽度（像素）：" + width);
-        Log.e("h_bl", "屏幕高度（像素）：" + height);
-        Log.e("h_bl", "屏幕密度（0.75 / 1.0 / 1.5）：" + density);
-        Log.e("h_bl", "屏幕密度dpi（120 / 160 / 240）：" + densityDpi);
-        Log.e("h_bl", "屏幕宽度（dp）：" + wscreenWidth);
-        Log.e("h_bl", "屏幕高度（dp）：" + screenHeight);
-        Log.e("屏幕尺寸", (Math.sqrt(1920 * 1920 + 1080 * 1080) / densityDpi) + "");
+        showLogE("屏幕尺寸",(Math.sqrt(1920 * 1920 + 1080 * 1080) / 25.4)
+                +"\n屏幕宽度（像素）：" + width
+                + "\n屏幕高度（像素）：" + height
+                + "\n屏幕密度（0.75 / 1.0 / 1.5）" + density
+                + "\n屏幕密度dpi（120 / 160 / 240）：" + densityDpi
+                + "\n屏幕宽度（dp）：" + wscreenWidth
+                +"\n屏幕高度（dp）：" + screenHeight);
     }
 }

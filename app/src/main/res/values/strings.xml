@@ -2,7 +2,6 @@
     <string name="app_name">科二平板端</string>
 
     <string name="bottom_context">技术支持：山东科翔软件科技有限公司</string>
-    <string name="success">恭喜您本次考试已通过，从此您就是有证的人</string>
     <string name="no_discipline">您违反了考试纪律，考试成绩不合格</string>
     <string name="no_regulations">您未按规定行驶，考试成绩不合格</string>
     <string name="ready">考生准备好后，请点击下方“准备考试”按钮</string>
@@ -10,6 +9,7 @@
     <string name="bumper_rod">您已撞杆，考试成绩不合格</string>
     <string name="no_fire">您已熄火，考试成绩不合格</string>
     <string name="cross">您已越界，考试成绩不合格</string>
+    <string name="success">恭喜您本次考试已通过</string>
     <string name="unqualified_point">不合格点</string>
     <string name="sure_exit">确定退出系统吗？</string>
     <string name="equipment_point">设备点</string>
