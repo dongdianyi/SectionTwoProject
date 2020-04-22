@@ -29,6 +29,8 @@ import sdkx.sectiontwoproject.bean.Car;
 import sdkxsoft.com.pojo.XyPojo;
 import sdkxsoft.com.tools.LngLatToXYTools;
 
+import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
+
 public class MyViewCar extends View {
 
     private Bitmap bitmap, bitmapPoint;
@@ -71,8 +73,8 @@ public class MyViewCar extends View {
 
         gpswidth = width * car.getData().getGpswidth();
         gpslength = length * (1 - car.getData().getGpslength());
-        Log.e("车大小:", length + "---" + width);
-        Log.e("gps车大小:", gpswidth + "---" + gpslength);
+        showLogE("车大小:", length + "---" + width);
+        showLogE("gps车大小:", gpswidth + "---" + gpslength);
         invalidate();
 
     }
@@ -87,8 +89,8 @@ public class MyViewCar extends View {
         this.xyPojo = xyPojo;
         alpha = (float) angle;
         //添加真实经纬度到集合
-        Log.e("Gps经纬度", xyPojo.getX() + "---" + xyPojo.getY());
-        Log.e("车左上", (int) (xyPojo.getX() - gpslength) + "---" + (int) (xyPojo.getY() - gpswidth));
+        showLogE("Gps经纬度", xyPojo.getX() + "---" + xyPojo.getY());
+        showLogE("车左上", (int) (xyPojo.getX() - gpslength) + "---" + (int) (xyPojo.getY() - gpswidth));
 
         invalidate();
     }

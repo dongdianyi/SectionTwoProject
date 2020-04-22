@@ -21,6 +21,8 @@ import java.util.List;
 import sdkx.sectiontwoproject.R;
 import sdkxsoft.com.pojo.XyPojo;
 
+import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
+
 
 public class MyView extends View {
 
@@ -46,7 +48,7 @@ public class MyView extends View {
             pointX[i]=(float)(double)points.get(i).getX();
             pointY[i]=(float)(double)points.get(i).getY();
 
-            Log.e("库坐标"+(i+1),pointX[i]+"---"+pointY[i]);
+            showLogE("库坐标"+(i+1),pointX[i]+"---"+pointY[i]);
         }
         invalidate();
     }

@@ -19,6 +19,12 @@ import com.alibaba.fastjson.JSONArray;
 
 import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
 
+
+/**
+ * 判断车辆行驶过程是否出错的方法
+ * @author wzr
+ *4-22 版: 新增倒车超过若干厘米才判断为倒车
+ */
 public class CrossBoundary {
 	public static double speedAngle = 0;
 	/**是否出库了*/
@@ -46,13 +52,17 @@ public class CrossBoundary {
 	/** 4: 串口信息错误 */
 	public static final int PORT_DATA_ERROR = 4; 
 	
-	private static double outLine = 0.0;
-	private static double pileLine = 0.0;
+	private static double outLine = 0.0;//边界线内缩距离
+	private static double pileLine = 3.0;//桩的半径
+	private static double distance = 4.0;//倒车距离
 
 	private List<Point> place = new ArrayList<Point>();// 场地的点集
 
 	private List<Point> car = new ArrayList<Point>();// 车辆的点集
 
+	private Point befrePoint = null;//开始倒车的第一个点
+	private Point afterPoint = null;//开始倒车的最后一个点
+	
 //	private List<Point> route = new ArrayList<Point>();// 路线的点集 TODO ????
 	/** 考生号 */
 	private String examineeId;
@@ -66,17 +76,23 @@ public class CrossBoundary {
 	 * @param examineeId : 考生id
 	 * @param outLine : 边界
 	 * @param pileLine : 桩
+	 * @param distance : 倒车距离
+	 *
 	 */
-	public void setMessage(String placeStr, String carStr, String examineeId, double outLine, double pileLine) {
+	public void setMessage(String placeStr, String carStr, String examineeId, 
+			double outLine, double pileLine, double distance) {
 		this.place = JSONArray.parseArray(placeStr, Point.class);
 		this.car = JSONArray.parseArray(carStr, Point.class);
 		this.examineeId = examineeId;
 		this.outLine = outLine;
 		this.pileLine = pileLine;
+		this.distance = distance;
 		speedAngle = 0;
 		backNumber = 0;
 		isBack = false;
 		inArea3 = false;
+		befrePoint = null;
+		afterPoint = null;
 	}
 
 	
@@ -89,11 +105,11 @@ public class CrossBoundary {
 	 */
 	public int isCross(String data) {
 		// 如果有正在考试的考生
-//		try {// 接收完一整条数据
-//			Thread.sleep(100);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
+		try {// 接收完一整条数据
+			Thread.sleep(5);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		// 判断是否有考生考试?
 //		if (this.examineeId != null && !"".equals(this.examineeId)) {
 		if (!checkData(data)) {// 判断串口传的数据是否正确
@@ -106,7 +122,7 @@ public class CrossBoundary {
 		Point gps = new Point(Double.valueOf(analysis.get("lng")), Double.valueOf(analysis.get("lat")));
 		double angle = Double.valueOf(analysis.get("velocityAngle"));// 速度角
 
-		int touch = touch(angle, gps, this.place, this.car);// true: 越出边界; false:未越出边界
+		int touch = touch(angle, gps, this.place, this.car);// ture: 越出边界; false:未越出边界
 //		if (touch) {// 越出边界
 			return touch;
 //		} else {
@@ -264,7 +280,6 @@ public class CrossBoundary {
             if (totleStr.length() == 1) {
                 totleStr = "0" + totleStr;
             }
-            showLogE("输出数据：", checkValue + "\n" + totleStr);
             return totleStr.equalsIgnoreCase(checkValue);
         } catch (StringIndexOutOfBoundsException e) {
             return false;
@@ -339,7 +354,7 @@ public class CrossBoundary {
 				α = angle + 180 + vertex;
 				α = getα(α);
 			}
-			newPoint = calLocationByDistanceAndLocationAndDirection(α, gps.getLng(), gps.getLat(), distance / 100);
+			newPoint = calLocationByDistanceAndLocationAndDirection(α, gps.getLng(), gps.getLat(), distance);
 			result.add(newPoint);
 		}
 
@@ -426,12 +441,6 @@ public class CrossBoundary {
 	 * @return ture: 越出边界; false:未越出边界
 	 */
 	public int touch(double angle, Point gps, List<Point> place, List<Point> car) {
-//		if(outLine == null) {
-//			outLine = 0.0;
-//		}
-//		if(null == pileLine) {
-//			pileLine = 0.0;
-//		}
 		List<Point> turnCar = getVertex(angle, gps, car);// 得到车辆转向后的经纬度
 		Geometry carGeo = pointToGraph(turnCar);// 形成车辆的图形
 		Geometry placeGeo = pointToGraph(place);// 形成场地的图形(只生成一次?然后存储成static final?)
@@ -440,6 +449,7 @@ public class CrossBoundary {
 		if (isOut) {// 出界
 			boolean isPile = pileTouches(carGeo, place, pileLine);// 警告触发线
 			if (isPile) {// 撞杆
+				showLogE("pileLine",pileLine+"");
 				return PILE_ERROR;
 			}
 			return OUT_ERROR;
@@ -561,8 +571,8 @@ public class CrossBoundary {
 	/**
 	 * 	判断车辆是否倒车
 	 * @param gps    gps的点
-	 * place3 场地的4点
-	 * place4 场地的5点
+	 *  place3 场地的4点
+	 *  place4 场地的5点
 	 * @return true : 正常 ；false : 未在规定路线行驶（在库外倒车）
 	 */
 	public boolean inThreadArea(Point gps, Geometry carGeo, List<Point> place) {
@@ -575,19 +585,30 @@ public class CrossBoundary {
 
 		double cosC = (a * a + b * b - c * c) / (2 * a * b);
 		double angle = Math.acos(cosC) * 180 / Math.PI;
-		
+		double badistance = 0.0;//倒车距离
 		if(isBack) {//入库之后
 			if (speedAngle >= angle) {// 一直在远离库底
 				speedAngle = angle;
 				backNumber = 0;//没有连续倒车归零
+				befrePoint = null;
+				afterPoint = null;
 				return true;
 			} else {// 第一次远离车库即倒车之后不可再次靠近库底
 				backNumber++;
-				if(backNumber > 10) {//连续倒车点超过10次
-					showLogE("连续倒车点超过10次: " , backNumber+"");
-					return false;
+				if(backNumber == 1) {
+					befrePoint = gps;
+				}else {
+					afterPoint = gps;
 				}
-				showLogE("gps.toString",gps.toString());
+				if(backNumber > 10) {//连续倒车点超过10次
+					//计算累计10次的倒车距离
+					badistance = distanceByLnglat(befrePoint, afterPoint) * 100;
+					showLogE("距离",backNumber + " : isBackdistanceByLnglat: " + badistance);
+					if(badistance >= distance) {
+						return false ;
+					}
+					return true;
+				}
 				return true;
 			}
 		}
@@ -595,24 +616,35 @@ public class CrossBoundary {
 		if (speedAngle <= angle) {// 一直在靠近库底
 			speedAngle = angle;
 			backNumber = 0;//没有连续倒车归零
+			befrePoint = null;
+			afterPoint = null;
 			return true;
 		} else {// 第一次远离车库即倒车时判断是否在车库里
 			backNumber++;
+			if(backNumber == 1) {
+				befrePoint = gps;
+			}else {
+				afterPoint = gps;
+			}
 			boolean onTest = inArea3(carGeo, place);// 测试车的图形是否完全在场地的图形中
-			if(onTest || inArea3) {
+			if(onTest || inArea3) {//在库里倒的车
 				inArea3 = true;
+				isBack = true;
 				return true;
 			}
 			if(backNumber > 10) {//连续倒车点超过10次
-				showLogE("连续倒车点超过10次啊: " , backNumber+"");
-				isBack = true;
-				return false;
+				badistance = distanceByLnglat(befrePoint, afterPoint) * 100;
+				showLogE("距离",backNumber + " : isBackdistanceByLnglat: " + badistance);
+				if(badistance >= distance) {
+					return false ;
+				}
+				return true;
 			}
 			return true;
 		}
 	}
 	
-	/** 算距离，没有四舍五入 **/
+	/** 算距离，没有四舍五入 单位:米 **/
 	public double distanceByLnglat(Point a, Point b) {
 		double lng1 = a.getLng();
 		double lat1 = a.getLat();

@@ -54,13 +54,13 @@ public class MainActivity extends BaseActivity {
                     public void accept(Permission permission) {
                         if (permission.granted) {
                             // 用户已经同意该权限
-                            Log.e("startActivity", permission.name + " is granted.");
+                            showLogE("startActivity", permission.name + " is granted.");
                         } else if (permission.shouldShowRequestPermissionRationale) {
                             // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框
-                            Log.e("startActivity", permission.name + " is denied. More info should be provided.");
+                            showLogE("startActivity", permission.name + " is denied. More info should be provided.");
                         } else {
                             // 用户拒绝了该权限，并且选中『不再询问』
-                            Log.e("startActivity", permission.name + " is denied.");
+                            showLogE("startActivity", permission.name + " is denied.");
                         }
                     }
                 });*/

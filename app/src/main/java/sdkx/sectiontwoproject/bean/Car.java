@@ -76,6 +76,7 @@ public class Car {
         private double width;
         private double outLine;
         private double pileLine;
+        private double distance;
         private LocationData location;
         private FlameoutData flameout;
         private List<CarPointsBean> carPoints;
@@ -94,6 +95,14 @@ public class Car {
 
         public void setPileLine(double pileLine) {
             this.pileLine = pileLine;
+        }
+
+        public double getDistance() {
+            return distance;
+        }
+
+        public void setDistance(double distance) {
+            this.distance = distance;
         }
 
         public double getGpswidth() {

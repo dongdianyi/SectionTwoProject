@@ -109,18 +109,6 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <!--<TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/end"
-        android:id="@+id/exit"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="@dimen/dp_20"
-        android:padding="@dimen/dp_20"
-        android:textColor="@color/title_color"
-        android:textSize="@dimen/sp_16"
-        android:textStyle="bold" />-->
-
     <include
         style="@style/top_style"
         layout="@layout/title_view" />

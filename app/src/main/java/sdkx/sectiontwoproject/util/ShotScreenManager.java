@@ -13,7 +13,6 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
 
 import java.io.ByteArrayOutputStream;
@@ -21,6 +20,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+
+import static sdkx.sectiontwoproject.util.UtilLog.showLogE;
 
 /**
  * 截屏管理类
@@ -63,7 +65,7 @@ public class ShotScreenManager {
                 }
             }
         } else {
-            Log.e(TAG, "the time is out of video");
+            showLogE(TAG, "the time is out of video");
             return;
         }
 
@@ -79,7 +81,7 @@ public class ShotScreenManager {
      */
     public Bitmap picShotScreen(Activity activity, String saveFilePath, int options) {
         if (activity == null) {
-            Log.e(TAG, "screenShot--->activity is null");
+            showLogE(TAG, "screenShot--->activity is null");
             return null;
         }
         View view = activity.getWindow().getDecorView();
@@ -104,7 +106,7 @@ public class ShotScreenManager {
         if (null != bitmap) {
             try {
                 compressAndGenImage(bitmap, saveFilePath, options);
-                Log.e(TAG, "--->截图保存地址：" + saveFilePath);
+                showLogE(TAG, "--->截图保存地址：" + saveFilePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -206,8 +208,11 @@ public class ShotScreenManager {
      */
     /** 保存方法 */
     public static void saveBitmap(Context context, Bitmap bmp) {
+        if (!checkSDCardAvailable()) {
+            return;
+        }
         // 首先保存图片
-        File appDir = new File(Environment.getExternalStorageDirectory(), "vgmap");
+        File appDir = new File(Environment.getExternalStorageDirectory(), "sectiontwo");
         if (!appDir.exists()) {
             appDir.mkdir();
         }
@@ -234,7 +239,32 @@ public class ShotScreenManager {
         // 最后通知图库更新
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(file.getAbsolutePath())));
     }
-
+    /**文件存储
+     * */
+    public static void saveFile(String content) {
+        if (!checkSDCardAvailable()) {
+            return;
+        }
+        File appDir = new File(Environment.getExternalStorageDirectory(), "sectiontwo");
+        if (!appDir.exists()) {
+            appDir.mkdir();
+        }
+        String fileName = "Log.txt";
+        File file = new File(appDir, fileName);
+        try {
+            FileOutputStream fos = new FileOutputStream(file,true);
+            OutputStreamWriter osw=new OutputStreamWriter(fos);
+            osw.write(content);
+            osw.flush();
+            osw.close();
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     //检查是否有SD卡
     public static boolean checkSDCardAvailable() {
         return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
@@ -253,7 +283,10 @@ public class ShotScreenManager {
         try {
             if (bitmap != null) {
                 baos = new ByteArrayOutputStream();
+                //有损体积较小黑色背景
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                //无损体积较大透明背景
+//                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
 
                 baos.flush();
                 baos.close();

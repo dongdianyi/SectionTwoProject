@@ -5,8 +5,10 @@ import android.widget.Toast;
 
 import sdkx.sectiontwoproject.app.MyApplication;
 
+import static sdkx.sectiontwoproject.util.ShotScreenManager.saveFile;
+
 public class UtilLog {
-     static Toast mToast;
+    static Toast mToast;
 
     /**
      * Toast
@@ -22,15 +24,14 @@ public class UtilLog {
     }
 
     /**
-     *
-     * @param flag flag
+     * @param flag    flag
      * @param content content
      */
-    public static void showLogE(String flag,String content){
+    public static void showLogE(String flag, String content) {
         Log.e(flag, content);
+        //文件存储
+//        saveFile(content);
     }
-
-
 
 
 }

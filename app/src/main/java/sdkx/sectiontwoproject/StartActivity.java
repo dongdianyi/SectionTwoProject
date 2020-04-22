@@ -129,26 +129,10 @@ public class StartActivity extends BaseActivity<String> {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(MyApplication.getInstance().getWidth() - 250, MyApplication.getInstance().getHeight() - 250);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);//居中显示
         linear.setLayoutParams(layoutParams);
-        //截屏
-       /* Bitmap bitmap = ShotScreenManager.getInstance().picShotScreen(this, getFilesDir().getAbsolutePath() + "pic.jpg", 70);
-        Log.e("bitmap", bitmap.toString());
-        Bitmap bitmap = ShotScreenManager.getViewBitmap(myViewRelative);
-        showLogE("bitmap",bitmap.toString());
-        ShotScreenManager.savePhotoToSDCard(bitmap, "/sdcard/file", "img");*/
         crossBoundary = new CrossBoundary();
         lngLatData = new ArrayList<>();
         // 未按规定路线行驶；越界；碰杆；熄火；考官主观判断；
         gradeArr = new int[]{1, 1, 1, 1, 1};
-       /* location = new int[2];
-        myView.getLocationOnScreen(location);
-        myView.post(new Runnable() {
-            @Override
-            public void run() {
-                Log.e("myView宽高：", myView.getWidth() + "---" + myView.getHeight());
-                lngLatToXYTools = CarTrajectory.getSiteTools(myView.getWidth()-20, myView.getHeight()-20);
-
-            }
-        });*/
 
 
         //播放音频文件
@@ -233,7 +217,7 @@ public class StartActivity extends BaseActivity<String> {
                 flameoutData = car.getData().getFlameout();
                 myviewCar.getCar(car, lngLatToXYTools);
                 //录入车辆场地信息
-                crossBoundary.setMessage(JSON.toJSONString(filed.getData()), JSON.toJSONString(car.getData().getCarPoints()), "", car.getData().getOutLine(), car.getData().getPileLine());
+                crossBoundary.setMessage(JSON.toJSONString(filed.getData()), JSON.toJSONString(car.getData().getCarPoints()), "", car.getData().getOutLine(), car.getData().getPileLine(), car.getData().getDistance());
 
                 //初始化webSocket
                 initSocketClient();
@@ -255,6 +239,14 @@ public class StartActivity extends BaseActivity<String> {
 
     }
 
+    @Override
+    public void fail(String flag, Throwable t) {
+        super.fail(flag, t);
+        if (flag.equals("提交数据")) {
+            showToast("提交失败");
+        }
+    }
+
     public void serialPort() {
         lngLatData.clear();
 
@@ -262,13 +254,13 @@ public class StartActivity extends BaseActivity<String> {
         ArrayList<Device> devices = serialPortFinder.getDevices();
 
 //        Device device = (Device) getIntent().getSerializableExtra(DEVICE);
-//        Log.e("onCreate: device =", "onCreate: device = " + device);
+//        showLogE("onCreate: device =", "onCreate: device = " + device);
         if (devices.size() > 0) {
             mSerialPortManager = new SerialPortManager();
 
             // 打开串口
 //            for (int i = 0; i < devices.size(); i++) {
-//                Log.e("onCreate: device =", "onCreate: device root= " + devices.get(i).getRoot()
+//                showLogE("onCreate: device =", "onCreate: device root= " + devices.get(i).getRoot()
 //                        + "\nonCreate: device name= " + devices.get(i).getName()
 //                        + "\nonCreate: device file= " + devices.get(i).getFile());
 //            }
@@ -319,7 +311,7 @@ public class StartActivity extends BaseActivity<String> {
 //                                        double angle = Double.parseDouble(arr[10]);
 //                                        double angle = Double.parseDouble(arr[11]);
                                         showLogE("定位截取的数据：", "经度：" + lng + "纬度" + lat + "angle:" + angle);
-                                        if (isTermination || isShow) {
+                                        if (isTermination || isShow||isSub) {
                                             return;
                                         }
                                         lngLatData.add(new SitePort(lng, lat, angle));
@@ -382,11 +374,6 @@ public class StartActivity extends BaseActivity<String> {
             //熄火串口信息
             mSerialPortManager2 = new SerialPortManager();
             // 打开串口
-//            for (int i = 0; i < devices.size(); i++) {
-//                Log.e("onCreate: device =", "onCreate: device root= " + devices.get(i).getRoot()
-//                        + "\nonCreate: device name= " + devices.get(i).getName()
-//                        + "\nonCreate: device file= " + devices.get(i).getFile());
-//            }
             boolean openSerialPort2 = mSerialPortManager2.setOnOpenSerialPortListener(this)
                     .setOnSerialPortDataListener(new OnSerialPortDataListener() {
                         @Override
@@ -413,7 +400,7 @@ public class StartActivity extends BaseActivity<String> {
                                         if (fireStr.indexOf("AA4412") < fireStr.indexOf("AA4412", fireStr.indexOf("AA4412") + 1)) {
                                             fireStr1 = fireStr.substring(fireStr.indexOf("AA4412"), fireStr.indexOf("AA4412", fireStr.indexOf("AA4412") + 1));
                                             fireStr2 = fireStr.substring(fireStr.indexOf("AA4412", fireStr.indexOf("AA4412") + 1));
-                                            Log.e("fireStr", fireStr1 + "\n" + fireStr2);
+                                            showLogE("fireStr", fireStr1 + "\n" + fireStr2);
 
                                         } else {
                                             fireStr2 = fireStr;
@@ -482,7 +469,6 @@ public class StartActivity extends BaseActivity<String> {
      */
     @Override
     public void onSuccess(File device) {
-//        Toast.makeText(getApplicationContext(), String.format("串口 [%s] 打开成功", device.getPath()), Toast.LENGTH_SHORT).show();
         showLogE("串口打开：", String.format("串口 [%s] 打开成功", device.getPath()));
 
     }
@@ -506,26 +492,6 @@ public class StartActivity extends BaseActivity<String> {
         }
     }
 
-    /**
-     * 显示提示框
-     *
-     * @param title   title
-     * @param message message
-     */
-    private void showDialog(String title, String message) {
-        new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("退出", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                        finish();
-                    }
-                })
-                .setCancelable(false)
-                .create()
-                .show();
-    }
 
     /**
      * 提交数据
@@ -546,16 +512,6 @@ public class StartActivity extends BaseActivity<String> {
             noHttpRx.postHttpJson("提交数据", HttpUrl.SETDATA_URL, JSON.toJSONString(map), null);
         }
     }
-
-   /* @SingleClick
-    @OnClick({R.id.exit})
-    public void onViewClicked(View view) {
-        if (!isShow) {
-            isShow = true;
-            submit(getResources().getString(R.string.success));
-        }
-    }*/
-
 
     /**
      * 断开连接
