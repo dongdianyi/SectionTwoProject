@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jaeger.library.StatusBarUtil;
+import com.kongqw.serialportlibrary.SerialPort;
 import com.kongqw.serialportlibrary.SerialPortManager;
 import com.kongqw.serialportlibrary.listener.OnOpenSerialPortListener;
 
@@ -210,7 +211,6 @@ public abstract class BaseActivity<T> extends AppCompatActivity implements IView
 
     @Override
     public void toActivityData(String flag, String object) {
-
     }
 
     @Override

@@ -57,7 +57,6 @@ public class PerInfActivity extends BaseActivity {
     @Override
     public void initData() {
         MyApplication.getInstance().addActivity(this);
-
         Intent intent = getIntent();
         perInStr = intent.getStringExtra("perin");
         Gson gson = new Gson();

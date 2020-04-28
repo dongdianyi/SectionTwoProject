@@ -9,12 +9,15 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
+import com.tbruyelle.rxpermissions2.Permission;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.functions.Consumer;
 import sdkx.sectiontwoproject.app.MyApplication;
 import sdkx.sectiontwoproject.base.BaseActivity;
 import sdkx.sectiontwoproject.bean.PerIn;
@@ -46,7 +49,7 @@ public class MainActivity extends BaseActivity {
     public void initData() {
         MyApplication.getInstance().addActivity(this);
 
-      /*  RxPermissions rxPermission = new RxPermissions(this);
+        RxPermissions rxPermission = new RxPermissions(this);
         rxPermission
                 .requestEach(needPermissions)
                 .subscribe(new Consumer<Permission>() {
@@ -63,7 +66,7 @@ public class MainActivity extends BaseActivity {
                             showLogE("startActivity", permission.name + " is denied.");
                         }
                     }
-                });*/
+                });
         exitLinear.getBackground().setAlpha(51);
         preTv.getBackground().setAlpha(120);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(MyApplication.getInstance().getWidth() / 2, MyApplication.getInstance().getHeight() / 3);

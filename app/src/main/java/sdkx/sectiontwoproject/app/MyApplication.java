@@ -27,6 +27,7 @@ public class MyApplication extends Application {
     private List<Activity> mList = new ArrayList<>();
     private int width;
     private int height;
+    private WindowManager wm;
 
     @Override
     public void onCreate() {

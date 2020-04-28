@@ -157,6 +157,12 @@ public class Car {
         }
 
         public LocationData getLocation() {
+            if (location==null) {
+                LocationData locationData=new LocationData();
+                locationData.setSerialNumber("/dev/ttyS2");
+                locationData.setBaudRate("115200");
+                return locationData;
+            }
             return location;
         }
 
@@ -165,6 +171,12 @@ public class Car {
         }
 
         public FlameoutData getFlameout() {
+            if (flameout==null) {
+                FlameoutData flameoutData=new FlameoutData();
+                flameoutData.setSerialNumber("/dev/ttyS3");
+                flameoutData.setBaudRate("115200");
+                return flameoutData;
+            }
             return flameout;
         }
 

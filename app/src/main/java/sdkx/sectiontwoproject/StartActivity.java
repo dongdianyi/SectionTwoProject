@@ -1,8 +1,7 @@
 package sdkx.sectiontwoproject;
 
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -10,7 +9,6 @@ import android.media.SoundPool;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -23,7 +21,6 @@ import com.kongqw.serialportlibrary.Device;
 import com.kongqw.serialportlibrary.SerialPortFinder;
 import com.kongqw.serialportlibrary.SerialPortManager;
 import com.kongqw.serialportlibrary.listener.OnSerialPortDataListener;
-import com.liqi.nohttputils.nohttp.NoHttpInit;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -33,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 
 import butterknife.BindView;
 import sdkx.sectiontwoproject.app.MyApplication;
@@ -110,8 +108,12 @@ public class StartActivity extends BaseActivity<String> {
 
     private SoundPool mSoundPool;
     private ReceiveMessage receiveMessage;
-
+    //socket
     private final int whatNum = 0x0;
+    //定时器
+    private final int whatNumTime=100;
+    private int count=30;
+
     private Car.DataBean.LocationData locationData;
     private Car.DataBean.FlameoutData flameoutData;
     private HashMap<Integer, Integer> soundmap;
@@ -235,15 +237,19 @@ public class StartActivity extends BaseActivity<String> {
             }
             isShow = true;
             showDialog(this, false, info);
+            //倒计时
+//            mHandlerMessage.sendEmptyMessageDelayed(whatNumTime,1000);
         }
 
     }
+
 
     @Override
     public void fail(String flag, Throwable t) {
         super.fail(flag, t);
         if (flag.equals("提交数据")) {
             showToast("提交失败");
+            mHandlerMessage.sendEmptyMessageDelayed(whatNumTime,1000);
         }
     }
 
@@ -570,6 +576,16 @@ public class StartActivity extends BaseActivity<String> {
                     }
                 } catch (JsonSyntaxException e) {
                     showLogE("JsonSyntaxException", e.getMessage());
+                }
+            }
+            if (msg.what==whatNumTime) {
+                if(count>0){
+                    count--;
+                    mHandlerMessage.sendEmptyMessageDelayed(whatNumTime,1000);
+                }else {
+                    Intent intent = new Intent(StartActivity.this,MainActivity.class);
+                    startActivity(intent);
+                    MyApplication.getInstance().exit();
                 }
             }
             return false;
